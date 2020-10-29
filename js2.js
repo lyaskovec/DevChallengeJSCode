@@ -4,8 +4,8 @@ let ctx = canvas.getContext('2d');
 let padding = 20;
 let width = 500;
 let heigth = 500;
-let gY = 50;
-let gX = 0;
+let gY = 5
+let gX = -10
 Object.assign(canvas, {width: width + 2* padding, height: heigth + 2 * padding, style: `width: ${width + 2 * padding}px; height: ${heigth + 2 * padding}px`});
 
 document.addEventListener('click', ()=> {
@@ -53,6 +53,8 @@ function Point(x, y) {
   this.lines = []
 }
 
+let iii = []
+
 Point.prototype = {
   setSpeed(dx, dy) {
   },
@@ -72,12 +74,15 @@ Point.prototype = {
     this.p.y += this.v.y * time;
     this.p.x += this.v.x * time;
     logg({x: this.p.x, y: this.p.y});
-    ctx.fillStyle = this.isCollision ? 'red' : 'black';
-    ctx.fillRect(this.p.x - 5, this.p.y - 5, 10, 10);
+    ctx.fillStyle = this.isCollision ? 'red' : 'blue';
+    ctx.strokeStyle = 'blue'
+    // ctx.fillRect(this.p.x - 5, this.p.y - 5, 10, 10);
     ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(this.p.x + 10, this.p.y + 10);
-    ctx.stroke()
+    ctx.arc(this.p.x, this.p.y, 1, 0, 2 * Math.PI);
+    ctx.stroke();
+    // ctx.moveTo(x, y);
+    // ctx.lineTo(this.p.x + 10, this.p.y + 10);
+    // ctx.stroke()
     logg({
       speed: Math.sqrt(Math.pow(this.v.x, 2) + Math.pow(this.v.y, 2)),
       x: this.p.x,
@@ -89,7 +94,7 @@ Point.prototype = {
   },
   collisions(time) {
     this.isCollision = this.lines.map(line => {
-      let res = checkCollision(Math.round(this.p.x), Math.round(this.p.y), Math.round(this.p.x + this.v.x * time), Math.round(this.p.y + this.v.y * time), line.p1.x, line.p1.y, line.p2.x, line.p2.y)
+      let res = checkCollision((this.p.x), (this.p.y), (this.p.x + this.v.x * time), (this.p.y + this.v.y * time), line.p1.x, line.p1.y, line.p2.x, line.p2.y)
       // line.isCollision = !!res
       if (res) {
         line.isCollision = true
@@ -103,8 +108,8 @@ Point.prototype = {
 };
 
 function Line(x, y, x2, y2) {
-  this.p1 = {x: Math.round(x), y: Math.round(y)};
-  this.p2 = {x: Math.round(x2), y: Math.round(y2)};
+  this.p1 = {x: (x), y: (y)};
+  this.p2 = {x: (x2), y:(y2)};
   this.isCollision = false
 }
 
@@ -126,7 +131,7 @@ Line.prototype = {
 let point = new Point(0, 0);
 
 let items = [point, new Line(100, 0, 50, 200), new Line(150, 100, 100, 400), new Line(0, 200, 400, 200), new Line(10, 500, 500, 500)];
-for(let i = 0; i < 10; i++) {
+for(let i = 0; i < 20; i++) {
   items.push(new Line(Math.random() * 100, Math.random() * 100, Math.random() * 500, Math.random() * 500))
 }
 
@@ -142,10 +147,16 @@ function draw() {
   let current = Date.now();
   let delta = current - time
   time = current;
-  ctx.clearRect(0, 0, 600, 600);
+  // ctx.clearRect(0, 0, 600, 600);
 
 
   items.forEach(item => item.draw(delta / 250));
+
+  // ctx.beginPath();
+  // ctx.strokeStyle = 'blue';
+  //
+  // ctx.stroke();
+
   requestAnimationFrame(draw);
 }
 
