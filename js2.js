@@ -4,8 +4,8 @@ let ctx = canvas.getContext('2d');
 let padding = 20;
 let width = 500;
 let heigth = 500;
-let gY = -5;
-let gX = -30;
+let gY = 50;
+let gX = 0;
 Object.assign(canvas, {width: width + 2* padding, height: heigth + 2 * padding, style: `width: ${width + 2 * padding}px; height: ${heigth + 2 * padding}px`});
 
 document.addEventListener('click', ()=> {
@@ -47,9 +47,9 @@ logg = (params = {}) => {
 };
 
 function Point(x, y) {
-  this.isCollision = true;
+  this.isCollision = false;
   this.p = {x, y};
-  this.v = {x: 50, y: 10};
+  this.v = {x: 50, y: 50};
   this.lines = []
 }
 
@@ -61,32 +61,51 @@ Point.prototype = {
   },
   draw(time) {
 
-    this.v.y += gY * time * time / 2;
-    this.v.x += gX * time * time / 2;
+    this.v.y += gY * time;
+    this.v.x += gX * time;
 
-    this.p.y += gY * time * time / 2;
-    this.p.x += gX * time * time / 2;
+    let start = Date.now()
+    this.collisions(time);
+    logg({time: Date.now() - start})
 
-
-
+    let {x, y} = this.p;
     this.p.y += this.v.y * time;
     this.p.x += this.v.x * time;
     logg({x: this.p.x, y: this.p.y});
     ctx.fillStyle = this.isCollision ? 'red' : 'black';
     ctx.fillRect(this.p.x - 5, this.p.y - 5, 10, 10);
     ctx.beginPath();
-    ctx.moveTo(this.p.x, this.p.y);
-    ctx.lineTo(this.p.x + this.v.x, this.p.y + this.v.y);
+    ctx.moveTo(x, y);
+    ctx.lineTo(this.p.x + 10, this.p.y + 10);
     ctx.stroke()
+    logg({
+      speed: Math.sqrt(Math.pow(this.v.x, 2) + Math.pow(this.v.y, 2)),
+      x: this.p.x,
+      y: this.p.y,
+      vx: this.v.x,
+      vy: this.v.y,
+      time: time
+    })
   },
-  collisions(item) {
+  collisions(time) {
+    this.isCollision = this.lines.map(line => {
+      let res = checkCollision(Math.round(this.p.x), Math.round(this.p.y), Math.round(this.p.x + this.v.x * time), Math.round(this.p.y + this.v.y * time), line.p1.x, line.p1.y, line.p2.x, line.p2.y)
+      // line.isCollision = !!res
+      if (res) {
+        line.isCollision = true
+        console.log(res, this.p, this.v, line.p1, line.p2)
 
+      }
+      return res;
+    }).filter(item => item).length
+    // console.log('lines: ', this.isCollision)
   }
 };
 
 function Line(x, y, x2, y2) {
-  this.p1 = {x, y};
-  this.p2 = {x: x2, y: y2};
+  this.p1 = {x: Math.round(x), y: Math.round(y)};
+  this.p2 = {x: Math.round(x2), y: Math.round(y2)};
+  this.isCollision = false
 }
 
 Line.prototype = {
@@ -95,6 +114,7 @@ Line.prototype = {
   },
   draw(){
     ctx.beginPath();
+    ctx.strokeStyle = this.isCollision ? 'red' : 'black'
     ctx.moveTo(this.p1.x, this.p1.y);
     ctx.lineTo(this.p2.x, this.p2.y);
     ctx.stroke();
@@ -105,22 +125,27 @@ Line.prototype = {
 
 let point = new Point(0, 0);
 
-let items = [point, new Line(100, 50, 50, 200), new Line(150, 100, 500, 400), new Line(10, 500, 500, 500)];
+let items = [point, new Line(100, 0, 50, 200), new Line(150, 100, 100, 400), new Line(0, 200, 400, 200), new Line(10, 500, 500, 500)];
+for(let i = 0; i < 10; i++) {
+  items.push(new Line(Math.random() * 100, Math.random() * 100, Math.random() * 500, Math.random() * 500))
+}
+
+
 let time = Date.now();
+
+let points = items.filter(item => item instanceof Point);
+let lines = items.filter(item => item instanceof Line);
+
+points.forEach(point => point.lines = lines);
 
 function draw() {
   let current = Date.now();
   let delta = current - time
   time = current;
   ctx.clearRect(0, 0, 600, 600);
-  let points = items.filter(item => item instanceof Point);
-  let lines = items.filter(item => item instanceof Line);
 
-  points.forEach(point => {
-    lines.forEach(line => point.collisions(line))
-  });
 
-  items.forEach(item => item.draw(delta / 100));
+  items.forEach(item => item.draw(delta / 250));
   requestAnimationFrame(draw);
 }
 
