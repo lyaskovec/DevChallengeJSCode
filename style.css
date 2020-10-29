@@ -1,0 +1,77 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+body {
+  font: 12px/1.4 Tahoma;
+}
+:root {
+  --pointer-radious: 20px;
+}
+canvas {
+  width: 500px;
+  height: 500px;
+  border: 1px solid #f00;
+}
+.b-controls {
+  margin: 5px;
+}
+.b-controls b {
+  display: block;
+  margin-top: 5px;
+}
+.b-controls input {
+  padding: 3px 5px;
+}
+.canvas {
+  position: relative;
+  margin: 5px;
+  float: left;
+}
+#point {
+  position: absolute;
+  border: 1px solid #000;
+  width: var(--pointer-radious);
+  height: var(--pointer-radious);
+  border-radius: var(--pointer-radious);
+  transform: translate(-50%, -50%);
+  bottom: 10px;
+  left: 10px;
+}
+#point .end {
+  width: 3px;
+  height: 50px;
+  background: #f00;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, -5px);
+}
+#point .end:before,
+#point .end:after {
+  content: "";
+  background: #f00;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 15px;
+  width: 3px;
+  transform: rotate(30deg);
+  transform-origin: right top;
+}
+#point .end:after {
+  transform-origin: left top;
+  transform: rotate(333deg);
+}
+#point .drop {
+  position: absolute;
+  width: var(--pointer-radious);
+  height: var(--pointer-radious);
+  border: 1px solid #000;
+  border-radius: var(--pointer-radious);
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  z-index: 1;
+}
