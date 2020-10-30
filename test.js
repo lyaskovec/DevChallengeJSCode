@@ -1,7 +1,7 @@
 var W,H; // canvas width and height
 // get the canvas context
 const ctx = canvas.getContext("2d");
-const gravity = 0.19;
+const gravity = 0.01;
 function vec(x,y){return {x,y}}
 
 const line = {
@@ -23,7 +23,16 @@ const line = {
     ctx.lineTo(this.p2.x,this.p2.y);
     ctx.stroke();
   },
-  testBall(ball){  // line must be updated befor this call
+   dLine(p1, p2, color = 'black'){
+
+    ctx.beginPath();
+    ctx.strokeStyle = color
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke()
+  },
+
+testBall(ball){  // line must be updated befor this call
     // line is one sided and ball can only approch from the right
     // find line radius distance from line
     var x = this.p1.x + this.vnorm.y * ball.radius;
@@ -37,9 +46,13 @@ const line = {
       // get perpendicular line away from line
       var ox = this.vnorm.y * ball.radius
       var oy = -this.vnorm.x * ball.radius
+
+
+
       // get relative ball pos
       var px = ball.pos.x - (this.p1.x + ox);
       var py = ball.pos.y - (this.p1.y + oy);
+
       // find ball position that contacts the line
       var ld = (px * this.vec.x + py * this.vec.y)/(this.len * this.len);
       ball.pos.x  = this.vec.x * ld + (this.p1.x+ox);
@@ -51,9 +64,9 @@ const line = {
 
       // the ball has lost some speed (should not have but this is a fix)
 
-      var m = Math.sqrt(ball.delta.x * ball.delta.x + ball.delta.y * ball.delta.y);
-      ball.delta.x = (ball.delta.x / m) * ball.speed;
-      ball.delta.y = (ball.delta.y / m) * ball.speed;
+      // var m = Math.sqrt(ball.delta.x * ball.delta.x + ball.delta.y * ball.delta.y);
+      // ball.delta.x = (ball.delta.x / m) * ball.speed;
+      // ball.delta.y = (ball.delta.y / m) * ball.speed;
 
       // ball.delta.x = 10
       // ball.delta.y = 10
@@ -204,10 +217,10 @@ function mainLoop(time){
   l1.p2.x = 200 ;
   l2.p1.x = 0;
   l2.p2.x = 200 ;
-  l1.p1.y = Math.sin(time / 1000) * H * 0.1 + H * 0.1;
-  l1.p2.y = Math.cos(time / 1000) * H * 0.1 + H * 0.1;
-  l2.p1.y = Math.sin(time / 500) * H * 0.1 + H * 0.1;
-  l2.p2.y = Math.cos(time / 500) * H * 0.1 + H * 0.1;
+  l1.p1.y = Math.sin(time / 1000) * H * 0.4 + H * 0.4;
+  l1.p2.y = Math.cos(time / 1000) * H * 0.4 + H * 0.4;
+  l2.p1.y = Math.sin(time / 500) * H * 0.4 + H * 0.4;
+  l2.p2.y = Math.cos(time / 500) * H * 0.4 + H * 0.4;
   lines.update().draw();
   balls.update().draw();
 
