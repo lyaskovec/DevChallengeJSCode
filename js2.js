@@ -4,8 +4,8 @@ let ctx = canvas.getContext('2d');
 let padding = 20;
 let width = 500;
 let heigth = 500;
-let gY = 250
-let gX = -10
+let gY = -250
+let gX = +10
 Object.assign(canvas, {width: width + 2* padding, height: heigth + 2 * padding, style: `width: ${width + 2 * padding}px; height: ${heigth + 2 * padding}px`});
 
 document.addEventListener('click', ()=> {
@@ -55,7 +55,7 @@ logg = (params = {}) => {
 function Point(x, y) {
   this.isCollision = false;
   this.p = {x, y};
-  this.v = {x: 200 + Math.random() * 100, y: Math.random() * 100 + 200};
+  this.v = {x: -200 + Math.random() * 400, y: -200 + Math.random() * 400};
   this.lines = []
 }
 
@@ -74,31 +74,59 @@ V.prototype = {
     let {v} = this;
     this.l = Math.sqrt(Math.pow(v.x, 2), Math.pow(v.y, 2));
     this.n = {x: v.x / this.l, y: v.y / this.l};
+    return this;
   },
-  getAngle(vector){
-    let dot = this.v.x * vector.v.x + this.v.y * vector.v.y;
-    let cross = this.v.x + vector.v.y - this.v.y * vector.v.x
-    return Math.atan2(cross, dot);
+  getAngle(point){
+    if (point instanceof V) {
+      point = point.n;
+    }
+    let {n} = this;
+
+    let angle = Math.atan2(point.y - n.y, point.x - n.x) * 180 / Math.PI + 180
+    if (angle < 0) { angle += 2 * Math.PI; }
+    return angle;
+
+    //function getAngle(v1, v2) {
+    //   let dot = v1.x * v2.x + v1.y * v2.y;
+    //   let cross = v1.x * v2.y - v1.y * v2.x;
+    //   return Math.atan2(cross, dot);
+    // }
+
+    // let {n} = this;
+    // let dot = n.x * vector.x + n.y * vector.y;
+    // let cross = n.x + vector.y - n.y * vector.x;
+    // let angle = Math.atan2(cross, dot) * 180 / Math.PI;
+    // // if (angle < 0) {
+    // //   angle += 180
+    // // } else {
+    // //   angle -= 180
+    // // }
+    // return angle;
   },
+  getAngle(vector2){
+    let vector1 = this.n;
+    return (Math.atan2(vector2.y, vector2.x) - Math.atan2(vector1.y, vector1.x))* 180 / Math.PI;
+  },
+
   draw(color = 'blue'){
     let {p, v, n, l} = this;
-    console.log({p, v, n})
     ctx.beginPath();
     ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.arc(p.x - 1, p.y - 1, 2, 0, 2 * Math.PI);
+    ctx.fill()
     ctx.moveTo(p.x, p.y);
     ctx.lineTo(p.x + n.x * l, p.y + n.y * l);
     ctx.stroke();
+    return this;
   },
   rotate(ang) {
     ang = ang * (Math.PI / 180);
     let {v} = this;
     let cos = Math.cos(ang);
     let sin = Math.sin(ang);
-    console.log('V: ', v.x, v.y)
-    let [x, y] = new Array(Math.round(10000 * (v.x * cos - v.y * sin)) / 10000, Math.round(10000 * (v.x * sin + v.y * cos)) / 10000);
-    console.log('VV: ', x, y)
     this.v = {x: Math.round(10000 * (v.x * cos - v.y * sin)) / 10000, y: Math.round(10000 * (v.x * sin + v.y * cos)) / 10000};
-    this.update()
+    return this.update()
   },
   clone(){
     let {p, v} = this;
@@ -109,7 +137,18 @@ V.prototype = {
   move(x = 0, y = 0){
     this.p.x += x;
     this.p.y += y;
+    return this
+  },
+  len(length) {
+    let {n} = this;
+    this.v = {x: n.x * length, y: n.y * length};
+    this.update()
+    return this;
   }
+};
+
+V.line = function(p1, p2){
+  return new V(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y)
 };
 
 
@@ -123,15 +162,50 @@ function rotateVector(vec, ang) {
 
 
 {
-  let v = new V(50, 50, 100, 100)
-  let v2 = new V(50, 10, 205, 105)
-  v.draw('green');
-  v2.draw();
-  // v.move(0, 50)
-  for(let i = 0; i < 4; i++) {
-    v.rotate(-20);
-    v.draw('red');
-  }
+
+  // let count = 0;
+  // for (let i = 0; i < 36; i++) {
+  //   let v = new V(150, 150, 100, 100);
+  //   let chek = (-18 + i) * 10;
+  //   let next = v.clone().rotate(chek).draw('red');
+  //   v.draw('black');
+  //   // console.log('Angle ==> ', next.getAngle(v));
+  //   if (Math.round(chek) !== Math.round(v.getAngle(next.n))) {
+  //     console.log('Angle ==> ',  chek, ' == ', [v.getAngle(next.n), next.getAngle(v.n)]);
+  //   }
+
+
+    // let angle = Math.round(getAngle(v.n, next.n) * 180 / Math.PI)
+    // // if (angle < 0) {
+    // //   angle += 180
+    // // } else {
+    // //   angle -= 180
+    // // }
+    //
+    // if (angle !== chek) {
+    //   count++;
+    //   console.log('XXX:', {set: chek, get: angle})
+    // }
+
+
+  // }
+
+  // console.log('Count: ', count)
+
+
+
+  // let d = v.clone()
+  // for(let i = 0; i < 360; i++) {
+  //   d.clone().rotate(i * 1).draw('blue');
+  // }
+
+  // next
+  //   .clone().rotate(48).draw('blue')
+  //   .clone().rotate(30).draw('red')
+  //   .clone().rotate(30).draw('red')
+  //   .clone().rotate(30).draw('red')
+  // .clone().rotate(30).draw('red')
+
 }
 
 
@@ -187,38 +261,88 @@ Point.prototype = {
       let l = collisions[0].line;
       let {vnorm} = l;
 
-      let p1 = new V(p.x, p.y, vnorm.y * 100, -vnorm.x * 100);
-      let p2 = new V(p.x, p.y, this.p.x, this.p.y);
-      let angle = getAngle(p2.n, p1.n) * 180 / Math.PI
-      if (angle < 0) {
-        angle += 180
-      } else {
-        angle -= 180
+      let h = V.line(p, this.p);
+      // h.move(-10, -50)
+
+
+
+      let perpend = V.line(p, l.p2);
+
+      perpend.rotate(-90)
+      perpend.update()
+      perpend.draw();
+
+      h.draw('red');
+
+
+      let ang = h.getAngle(perpend.n)
+      h.clone().rotate(2*ang).len(200).draw('red')
+
+      if (Number.isNaN(ang)) {
+        debugger
       }
 
+      console.log(h.getAngle(perpend.n), ang)
+
+      // let angle = perpend.getAngle(h);
+
+      // if (angle < 0) {
+      //   angle += 180
+      // } else {
+      //   angle -= 180
+      // }
+
+      // console.log('ang ==> ', angle)
+      //
+      // let reflect = h.clone();
+      // reflect.rotate(-angle)
+      // reflect.draw('green')
 
 
-      let newV = rotateVector([this.v.x, this.v.y], 90);
-      let nnn = new V(p.x, p.y, newV[0], newV[1]);
+      return;
 
-      dv({x: p.x, y: p.y}, {x: newV[0], y: newV[1]})
+      {
+        let p1 = new V(p.x, p.y, vnorm.y * 100, -vnorm.x * 100);
+        // p1.draw('green')
+
+        let ver = V.line(p, this.p)
+        ver.rotate(45)
+        ver.draw('red')
 
 
-      console.log('newV => ', newV)
+        let p2 = new V(p.x, p.y, this.p.x, this.p.y);
 
 
-      console.log('Angle: ', angle)
+        let angle = getAngle(p2.n, p1.n) * 180 / Math.PI
+        if (angle < 0) {
+          angle += 180
+        } else {
+          angle -= 180
+        }
 
-      // dv(p, {x: (p1.normalize.x + p2.normalize.x)/ 2 + 100 / 2, y: (p1.normalize.y + p2.normalize.y) / 2 +100 }, 'green');
 
-      // var angleDeg = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
-      var angleDeg = Math.atan2(p2.n.y - p1.n.y, p2.n.x - p1.n.x) * 180 / Math.PI;
-      logg({aaaa: angle})
+        let newV = rotateVector([this.v.x, this.v.y], 90);
+        let nnn = new V(p.x, p.y, newV[0], newV[1]);
 
-      dline(this.p, p)
-      // dline({...p, y: p.y - 50}, {x: p.x + vnorm.x * 100, y: p.y + vnorm.y * 100}, 'blue')
-      dv({...p}, {x: vnorm.y * 100, y: -vnorm.x * 100}, 'blue')
-      dv({...p}, {x: -vnorm.y * 100, y: vnorm.x * 100}, 'red')
+        dv({x: p.x, y: p.y}, {x: newV[0], y: newV[1]})
+
+
+        console.log('newV => ', newV)
+
+
+        console.log('Angle: ', angle)
+
+        // dv(p, {x: (p1.normalize.x + p2.normalize.x)/ 2 + 100 / 2, y: (p1.normalize.y + p2.normalize.y) / 2 +100 }, 'green');
+
+        // var angleDeg = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+        var angleDeg = Math.atan2(p2.n.y - p1.n.y, p2.n.x - p1.n.x) * 180 / Math.PI;
+        logg({aaaa: angle})
+
+        dline(this.p, p)
+        // dline({...p, y: p.y - 50}, {x: p.x + vnorm.x * 100, y: p.y + vnorm.y * 100}, 'blue')
+        dv({...p}, {x: vnorm.y * 100, y: -vnorm.x * 100}, 'blue')
+        dv({...p}, {x: -vnorm.y * 100, y: vnorm.x * 100}, 'red')
+      }
     }
     this.isCollision = !!collisions.length
   }
@@ -270,17 +394,22 @@ function dv(p1, p2, color = 'black'){
 }
 
 
-let point = new Point(0, 0);
+let point = new Point(200, 200);
+ctx.beginPath();
+ctx.strokeStyle = 'red';
+ctx.fillStyle = 'red';
+ctx.arc(200 - 2, 200 - 2, 4, 0, 2 * Math.PI);
+ctx.fill()
 
 let items = [point];
 for(let i = 0; i < 2000; i++) {
   // items.push(new Line(Math.random() * 100, Math.random() * 100, Math.random() * 500, Math.random() * 500))
 }
 
-items.push(new Line(0, 0, 500, 0));
-items.push(new Line(0, 0, 0, 500));
-items.push(new Line(0, Math.random() * 500, 500, Math.random() * 500));
-items.push(new Line(500, 0, 500, 500));
+items.push(new Line(0, 50, 500, 50));
+items.push(new Line(50, 0, 0, 500)); // left
+items.push(new Line(0, 450, 500, 500)); // bottom
+items.push(new Line(500, 0, 500, 500)); // right
 
 
 let time = Date.now();
@@ -355,4 +484,4 @@ function checkCollision(x1, y1, x2, y2, x3, y3, x4, y4){
   else false
 }
 
-console.log(checkCollision(37, 235,63,22,184,120,34,87))
+// console.log(checkCollision(37, 235,63,22,184,120,34,87))
