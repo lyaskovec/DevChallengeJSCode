@@ -1,0 +1,29 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    title
+    link(rel='stylesheet' href='app.css')
+  body
+    div(vocab='b-wrap')
+      .canvas
+        canvas#canvas(width='500' height='500')
+        #point(style='transform: rotate(45deg)')
+          .end
+            .drop
+      #controls.b-controls
+        b Background:
+        div
+          label
+            input(type='radio' name='bgType' value='grid')
+            |  Grid:
+            input#grid(type='number' value='50')
+        div
+          label
+            input(type='radio' name='bgType' value='image')
+            |  Image:
+      div
+        button Start
+        button Pause
+        #logs
+    script(src='app.js')
