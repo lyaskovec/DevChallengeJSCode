@@ -8,6 +8,9 @@ body {
   font 12px/1.4 Tahoma
 }
 
+.align-center
+  text-align center
+
 :root
   --pointer-radious: 20px
 
@@ -156,10 +159,10 @@ canvas {
   &:hover
     background #FAFAFA
   input
-    opacity 0
+    opacity 1
     position absolute
-    left -10000px
-    top -10000px
+    left 0
+    top 0
   .toggle
     content ''
     width 20px
@@ -192,6 +195,9 @@ button
   border 0
   border-radius 3px
   cursor pointer
+  opacity 0.7
+  &:hover
+    opacity 1
 
 .ui-image
   background: url(./images/cloud.png) no-repeat center;
