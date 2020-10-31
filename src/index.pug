@@ -12,6 +12,7 @@ html(lang='en')
           .end
             .drop
       #controls.b-controls
+
         b Background:
         div
           label
@@ -26,4 +27,42 @@ html(lang='en')
         button Start
         button Pause
         #logs
+
+      div(style="margin: 100px; width: 300px")
+        .clr
+        div Швидкість
+        .ui-slider
+          .ui-slider__range
+            .ui-slider__point
+          .ui-slider__value 25
+
+        div Кут до горизонталі
+          .ui-slider
+            .ui-slider__range
+              .ui-slider__point
+            .ui-slider__value 25
+
+        label.ui-radio
+          input(type='radio' name='type' value='none')
+          .toggle
+          | Немає фону
+
+        label.ui-radio
+          input(type='radio' name='type' value='image')
+          .toggle
+          | Картинка
+
+        div
+          .ui-image.selected
+          .ui-image.add
+
+        label.ui-radio
+          input(type='radio' name='type' value='grid')
+          .toggle
+          | Сітка
+
+
+
+
+
     script(src='app.js')

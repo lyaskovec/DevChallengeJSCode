@@ -72,8 +72,8 @@ exports.watch = function () {
   });
   exports.default();
   let params = {usePolling: true};
-  watch('./src/js/**/*.js', params, exports.js);
+  watch('./src/**/*.js', params, exports.js);
   watch('./src/**/*.styl', params, exports.styles);
   watch('./src/**/*.pug', params, exports.templates);
-  watch('src/assets/**/*', params, exports.assets)
+  watch('./src/assets/**/*', params, exports.assets)
 }

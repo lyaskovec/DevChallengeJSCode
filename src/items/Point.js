@@ -61,6 +61,8 @@ class Point extends V {
       let l = collisions[0].line;
       l.isCollision = true
 
+      console.timeEnd('collision')
+      pause();
 
 
       let h = V.line(p, this.p);
