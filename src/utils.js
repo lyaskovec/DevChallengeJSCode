@@ -90,8 +90,8 @@ function checkCollision(x1, y1, x2, y2, x3, y3, x4, y4){
     let  Dy = ((A1 * C2) - (C1 * A2));
 
     if(D !== 0){
-      let x = parseInt(Dx / D);
-      let y = parseInt(Dy / D);
+      let x = (Dx / D);
+      let y = (Dy / D);
       return {x, y, len: len({x: x1, y: y1}, {x, y})};
     }
   }

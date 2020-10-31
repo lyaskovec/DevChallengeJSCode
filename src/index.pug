@@ -30,51 +30,54 @@ html(lang='en')
 
       div(style="margin: 100px; width: 300px")
         .clr
-        div Швидкість
+        div Speed:
         .ui-slider
           .ui-slider__range
-            .ui-slider__point
-          .ui-slider__value 25
-
-        div Кут до горизонталі
-          .ui-slider
-            .ui-slider__range
+            .ui-slider__body
               .ui-slider__point
-            .ui-slider__value 25
+          .ui-slider__value 50
 
-        label.ui-radio
-          input(type='radio' name='type' value='none')
-          .toggle
-          | Немає фону
+        div Horizontal angle:
+        .ui-slider
+          .ui-slider__range
+            .ui-slider__body
+              .ui-slider__point
+          .ui-slider__value 50
 
         label.ui-radio
           input(type='radio' name='type' value='image')
           .toggle
-          | Картинка
+          | Image background:
 
         div
-          .ui-image.selected
+          .ui-image.selected(style='background-image: url("./images/cloud.png")')
           .ui-image.add
 
         label.ui-radio
           input(type='radio' name='type' value='grid')
           .toggle
-          | Сітка
+          | Grid background:
 
-        div Швидкість
+        div Grid size:
           .ui-slider
             .ui-slider__range
-              .ui-slider__point
+              .ui-slider__body
+                .ui-slider__point
             .ui-slider__value 50
+
+        label.ui-radio
+          input(type='radio' name='type' value='none')
+          .toggle
+          | Without background:
 
         div
           div.align-center
             br
             br
-            button Додати перешкоду
+            button Add an obstacle
             br
             br
-          p Для того щоб додати перешкоду, натисніть на кнопку. Після того буде можливість додати точки щоб створити фігуру. Для завершення натисніть клавішу enter
+          p To add an obstacle click on the button. After you will be able to add points of the obstacle object. To finish adding press the enter key, to cancel press the escape button
 
 
 

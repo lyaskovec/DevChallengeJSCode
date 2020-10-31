@@ -61,8 +61,8 @@ class Point extends V {
       let l = collisions[0].line;
       l.isCollision = true
 
-      console.timeEnd('collision')
-      pause();
+      // console.timeEnd('collision')
+      // pause();
 
 
       let h = V.line(p, this.p);
@@ -86,7 +86,7 @@ class Point extends V {
       this.v.x = newVV.v.x;
       this.v.y = newVV.v.y;
       this.update();
-      this.len(this.l * 0.6);
+      this.len(this.l * 0.9);
       if (Number.isNaN(ang)) {
         debugger
       }

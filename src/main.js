@@ -26,7 +26,7 @@ function len(a, b) {
 console.time('collision')
 
 
-let point = new Point(300, 0, 0, 250);
+let point = new Point(300, 100, 0, 250);
 ctx.beginPath();
 ctx.strokeStyle = 'red';
 ctx.fillStyle = 'red';
@@ -38,10 +38,10 @@ for(let i = 0; i < 3; i++) {
   // items.push(new Line(Math.random() * 100, Math.random() * 100, Math.random() * 500, Math.random() * 500))
 }
 
-// items.push(new Line(500, 50, 0, 50));
-// items.push(new Line(0, 500, 50, 0)); // left
-// items.push(new Line(500, 500, 0, 450)); // bottom
-// items.push(new Line(500, 0, 500, 500)); // right
+items.push(new Line(500, 50, 0, 50));
+items.push(new Line(0, 500, 50, 0)); // left
+items.push(new Line(500, 500, 0, 450)); // bottom
+items.push(new Line(500, 0, 500, 500)); // right
 items.push(new Grid())
 // Підлога
 items.push(new Line(-100000, 500, 500000, 500));
@@ -164,7 +164,7 @@ document.body.addEventListener('keydown', ({keyCode}) => {
     let pos = getMousePosOnElement(evt);
     pointer.style.left = pos.left + 'px'
     start = {pageX, left: pos.left};
-    console.log(pos);
+    evt.preventDefault()
   };
   document.addEventListener('mousemove', (evt) => {
     if (start) {
