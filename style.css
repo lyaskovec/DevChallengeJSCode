@@ -12,6 +12,8 @@ canvas {
   width: 500px;
   height: 500px;
   border: 1px solid #f00;
+  background: url("./tr.png");
+  background-position: 0 0;
 }
 .b-controls {
   margin: 5px;
