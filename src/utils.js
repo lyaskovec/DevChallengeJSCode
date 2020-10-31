@@ -37,21 +37,6 @@ const params = {
   greedSize: 50,
 };
 
-let controls = document.getElementById('controls');
-let els = {};
-Object.keys(params).forEach(key => {
-  let el = Object.assign(document.createElement('div'), {
-    innerHTML: `<b>${key}</b><div><input type="number"></div>`
-  });
-  let input = el.querySelector('input');
-  els[key] = input
-  input.addEventListener('input', () => {
-    params[key] = +input.value;
-    draw()
-  });
-  input.value = params[key];
-  controls.appendChild(el)
-});
 
 function checkCollision(x1, y1, x2, y2, x3, y3, x4, y4){
   //нахождение координат векторов

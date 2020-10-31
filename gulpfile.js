@@ -49,7 +49,7 @@ exports.js = function js() {
     sourcemaps.init(),
     concat('app.js'),
     // uglify(),
-    sourcemaps.write(),
+    // sourcemaps.write(),
     dest(`${destinationFolder}`)
     // ,connect.reload()
   );
@@ -76,4 +76,4 @@ exports.watch = function () {
   watch('./src/**/*.styl', params, exports.styles);
   watch('./src/**/*.pug', params, exports.templates);
   watch('./src/assets/**/*', params, exports.assets)
-}
+};

@@ -52,14 +52,14 @@ class Point extends V {
     })).filter(item => item.res);
 
     collisions.sort((a, b)=> a.res.len - b.res.len);
-    this.isCollision = !!collisions.length
+    this.isCollision = !!collisions.length;
 
     if (collisions.length) {
       let p = collisions[0].res;
-      let res = collisions[0].res
+      let res = collisions[0].res;
       //let len = collisions[0].res.len;
       let l = collisions[0].line;
-      l.isCollision = true
+      l.isCollision = true;
 
       // console.timeEnd('collision')
       // pause();
@@ -86,7 +86,7 @@ class Point extends V {
       this.v.x = newVV.v.x;
       this.v.y = newVV.v.y;
       this.update();
-      this.len(this.l * 0.9);
+      this.len(this.l * 0.5);
       if (Number.isNaN(ang)) {
         debugger
       }

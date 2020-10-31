@@ -4,9 +4,15 @@
   outline none
 }
 
-body {
+.none
+  display none
+
+body
   font 12px/1.4 Tahoma
-}
+  background #f0f0f0
+  max-width 1200px
+  margin 0 auto
+
 
 .align-center
   text-align center
@@ -14,16 +20,33 @@ body {
 :root
   --pointer-radious: 20px
 
+.pos-away
+  position fixed!important
+  left -100000px!important
+  top -100000px!important
+
 canvas {
-  width: 500px;
-  height: 500px;
-  border: 1px solid red;
-  background url("./images/cloud.png")
+  width 100%
+  height 100%
+  background url("./images/pat2.png")
   background-position 0 0
+  position absolute
+  left 0
+  top 0
 }
+
+.b-wrap
+  display flex
+  height 500px
+  border 2px solid silver
+  background white
+  margin 10px
 
 .b-controls {
   margin: 5px;
+  padding: 5px 15px;
+  width: 300px;
+  overflow-y: scroll;
   b {
     display: block;
     margin-top 5px
@@ -34,13 +57,16 @@ canvas {
 }
 
 .canvas {
-  position relative
-  margin 5px
-  float: left
+  position: relative;
+  width: 100%;
+  background: #008000;
+  overflow: hidden;
+  flex: 1;
+  border-right: 2px solid silver;
 }
 
 #point {
-  position fixed
+  position absolute
   border 1px solid black
   width var(--pointer-radious)
   height var(--pointer-radious)
@@ -113,8 +139,8 @@ canvas {
     &:after
       position absolute
       left -10px
-      top 0
-      bottom 0
+      top -5px
+      bottom -5px
       right -10px
       content ""
       cursor pointer
@@ -161,7 +187,7 @@ canvas {
   cursor pointer
   line-height 38px
   padding-left 35px
-  border-radius 3px
+  border-radius 5px
   &:hover
     background #FAFAFA
   input
@@ -213,6 +239,7 @@ button
 .ui-image
   background: none no-repeat center;
   background-size: cover;
+  margin 0 3px
   width: 42px;
   height: 42px;
   border-radius: 3px;
@@ -221,8 +248,10 @@ button
   position relative
   cursor pointer
   opacity 0.7
+  float left
+  margin-bottom 5px
 
-  &.selected:after
+  &.item:after
     content: " ";
     display: block;
     width: 1em;
@@ -232,12 +261,20 @@ button
     position: absolute;
     left: 1em;
     top: 14%;
-    -webkit-transform: rotate(45deg); // tilts the shape
-    -moz-transform: rotate(45deg);
-    -o-transform: rotate(45deg);
-    transform: rotate(45deg);
+    opacity 0
+    transform: rotate(45deg) scale(0.1);
+    pointer-events none
+    transition all 0.2s
+
+  &.item.selected
+    pointer-events none
+    &:after
+      opacity 1
+      transform: rotate(45deg) scale(1);
+
 
   &.add
+    border-radius 50px
     &:after, &:before
       content ''
       background #2c3e50
@@ -246,8 +283,73 @@ button
       position absolute
       top 50%
       left 50%
+      opacity 1
       transform: translateY(-50%) translateX(-50%);
     &:after
       transform: translateY(-50%) translateX(-50%) rotate(90deg)
 
+.ui-image + .ui-image
+  margin-left 5px
+
 // #1ABC9C
+.ui-group
+  padding 15px 10px 10px
+  margin 10px -10px 20px
+  border 1px solid silver
+  border-radius 5px
+  position relative
+
+  &__title
+    position: absolute;
+    top: -15px;
+    left: 5px;
+    padding: 5px 10px 5px 30px;
+    background: white;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 10px;
+    &:hover
+      background #d7dcdf
+
+    &:before
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-right: 7px solid #2c3e50;
+      border-bottom: 7px solid transparent;
+      transform: rotate(-90deg);
+      content: '';
+      transition all 0.2s
+
+    &.hide:before
+      transform: rotate(-180deg);
+
+
+  &__title.hide + &__body
+    display none;
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background #e0e0e0
+}
+
+#polygons
+  position absolute
+  left 0
+  top 0
+  span
+    position absolute
+    transform translate(-50%, -50%)
+    background white
+    border 1px solid black
+    width 20px
+    height 20px
+    cursor move
+
+
