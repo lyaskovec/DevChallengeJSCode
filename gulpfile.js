@@ -40,7 +40,12 @@ exports.styles = function styles() {
 
 exports.js = function js() {
   return multipipe(
-    src(['src/**/*.js']),
+    src([
+      'src/items/V.js',
+      'src/items/**.js',
+      'src/utils.js',
+      'src/**/*.js'
+    ]),
     sourcemaps.init(),
     concat('app.js'),
     // uglify(),
