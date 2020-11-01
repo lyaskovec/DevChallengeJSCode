@@ -1,8 +1,4 @@
-
 class Grid {
-  constructor() {
-
-  }
   draw(){
     ctx.save();
     ctx.translate(ctx.xx, ctx.yy);
@@ -21,7 +17,7 @@ class Grid {
 
 
     for (let i = 0; i < 20; i++) {
-      let offset = i * step
+      let offset = i * step;
 
       // Bottom grid
       ctx.rect(parseInt(offset - startX), height - 6, 1, 6);

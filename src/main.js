@@ -7,9 +7,6 @@ function len(a, b) {
   return Math.sqrt(Math.pow(a.x - b.x, 2), Math.pow(a.y - b.y, 2))
 }
 
-console.time('collision')
-
-
 let point = new Point(300, 100, 0, 250);
 let items = [point];
 for(let i = 0; i < 3; i++) {
@@ -62,10 +59,6 @@ function draw() {
     }
   }
 
-  // xx = -20
-  // yy = -20
-
-  // if (y > 400) yy = -y + 200;
   ctx.xx = xx;
   ctx.yy = yy;
   canvas.style.backgroundPosition = `${-xx}px ${-yy}px `;
@@ -79,28 +72,10 @@ function draw() {
 requestAnimationFrame(draw);
 
 
-
-//
-// let grid = ge('grid');
-// let ccc = crEl('canvas', {style: 'position: absolute; left: -100000; top: -10000px'});
-// document.body.appendChild(ccc);
-//
-// grid.oninput = () => {
-//   let size = grid.value;
-//   let img = createGridImage(size, 'silver');
-//   canvas.style.backgroundImage = `url(${img})`;
-// };
-
-
 function pause() {
-  console.log('pause')
+  console.log('pause');
   stop = !stop;
-  if (!stop) {
-    // time = Date.now();
-    // draw();
-
-  }
-  point.paused = !point.paused
+  point.paused = !point.paused;
 }
 
 document.body.addEventListener('keydown', (evt) => {
@@ -169,9 +144,6 @@ const updateSize = window.onresize = ()=> {
 
 updateSize();
 
-let poligon = new Poligon();
-items.push(poligon);
-
 {
   let start = false;
   let fun = false;
@@ -201,44 +173,3 @@ items.push(poligon);
   }
   window.startDrag = startDrag;
 }
-
-let polygons = ge('polygons');
-polygons.addEventListener('mousedown', evt => {
-  let {target} = evt;
-  if (target.tagName === 'SPAN') {
-    let {index} = target;
-    let start = {...poligon.items[index]};
-    startDrag(evt, ({dx, dy})=> {
-      let x = poligon.items[index].x = start.x + dx;
-      let y = poligon.items[index].y = start.y + dy;
-      target.style = `top: ${y}px; left: ${x}px`
-    })
-  }
-});
-
-canvas.addEventListener('click', (evt) => {
-  let pos = getMousePosOnElement(evt);
-  let k = {x: pos.left, y: pos.top};
-  let index = poligon.push(k);
-  let point = crEl('span', {style: `top: ${pos.top}px; left: ${pos.left}px`, index});
-  ge('polygons').appendChild(point);
-});
-
-document.addEventListener('keyup', ({keyCode}) => {
-  //  Enter
-  if (keyCode === 13) {}
-  // Escape
-  if (keyCode === 27) {}
-  // Delete
-  if (keyCode === 46) {}
-});
-
-canvas.addEventListener('mousemove', evt => {
-  let {target} = evt;
-  if (target === canvas) {
-    ctx.pos = getMousePosOnElement(evt)
-  } else {
-    ctx.pos = false
-  }
-});
-
