@@ -23,7 +23,7 @@ html(lang='en')
           .ui-group__title General
           .ui-group__body
             div Started speed:
-            input(type='number' min='10' max='200' value='50' step='5' name='speed')
+            input(type='number' min='10' max='200' value='50' step='1' name='speed')
 
             div Horizontal angle:
               input(type='number' min='0' max='180' value='45' step='1' name='angle')
@@ -32,7 +32,7 @@ html(lang='en')
               input(type='number' min='0.1' max='0.9' value='0.4' step='0.1' name="attenuation")
 
             div Gravity
-              input(type='number' min='0' max='2000' value='1000' step='1' name="gravity")
+              input(type='number' min='0' max='2000' value='980' step='1' name="gravity")
 
             button Start
 
@@ -59,17 +59,19 @@ html(lang='en')
               .clr
 
             label.ui-radio
-              input(type='radio' name='type' value='grid')
+              input(type='radio' name='type' value='greed')
               .toggle
               | Grid background:
 
             div Grid size:
-              input(type='number' min='0' max='200' value='50' step='50' name="grid")
+              input(type='number' min='50' max='200' value='50' step='50' name="grid")
 
             label.ui-radio
               input(type='radio' name='type' value='none')
               .toggle
               | Without background:
+
+            button test
 
         .ui-group
           .ui-group__title Information:

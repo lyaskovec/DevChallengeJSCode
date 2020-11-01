@@ -147,48 +147,6 @@ document.body.addEventListener('keydown', ({keyCode}) => {
   });
 }
 
-{
-  let element = document.querySelector('.ui-slider');
-  let pointer = element.querySelector('.ui-slider__point');
-  let $value = element.querySelector('.ui-slider__value');
-  let start = false;
-  let width;
-  element.onmousedown = (evt) => {
-    let {pageX} = evt;
-    width = pointer.parentElement.clientWidth;
-    let pos = getMousePosOnElement(evt);
-    pointer.style.left = pos.left + 'px';
-    start = {pageX, left: pos.left};
-    evt.preventDefault()
-  };
-  document.addEventListener('mousemove', (evt) => {
-    if (start) {
-      let {pageX} = evt;
-      let dx = pageX - start.pageX;
-      let value = Math.min(Math.max(0, start.left + dx), width);
-      pointer.style.left = Math.min(Math.max(value), width) + 'px';
-      $value.innerHTML = parseInt(value / width  * 100);
-      console.log( value / width);
-    }
-  });
-  document.addEventListener('mouseup', (evt)=> {
-    if (start) {
-      start = false
-    }
-  })
-}
-
-
-{
-  let params = [
-    {id: 'speed', v: 100, step: 1, title: 'Швидкість'},
-    {id: 'angle', v: 45, min: 0, step: 1, max: 360, title: 'Кут'},
-    {id: 'race', v: 1, min: 1, step: 3, max: 360, title: 'Швидкість відтворення'},
-    {id: 'coef', v: 0.1, min: 0.1, max: 1, step: 0.1, title: 'Коефецієнт розсіювання'},
-    {id: 'Backgraound', items: ['Сітка', 'Картинка']}
-  ]
-}
-
 document.addEventListener('click', (evt) => {
   let {target} = evt;
   if (target.classList.contains('ui-group__title')) {
@@ -201,23 +159,6 @@ const updateSize = window.onresize = ()=> {
 };
 
 updateSize();
-
-//
-// let controls = document.getElementById('controls');
-// let els = {};
-// Object.keys(params).forEach(key => {
-//   let el = Object.assign(document.createElement('div'), {
-//     innerHTML: `<b>${key}</b><div><input type="number"></div>`
-//   });
-//   let input = el.querySelector('input');
-//   els[key] = input
-//   input.addEventListener('input', () => {
-//     params[key] = +input.value;
-//     draw()
-//   });
-//   input.value = params[key];
-//   controls.appendChild(el)
-// });
 
 let poligon = new Poligon();
 items.push(poligon);
@@ -335,20 +276,29 @@ document.addEventListener('click', (evt) => {
     param.node = node;
     Array.from(node.querySelectorAll('[ref]')).forEach(item => param[item.getAttribute('ref')] = item);
     param.body.sliderId = name;
+    param.posStep = 1 / ((max - min) / step + 1);
     upd(name)
   });
 
   function upd(name) {
     let param = params[name];
+    let {min, max, step, value} = param;
+    updPos(name, (value - min) / (max - min));
     param.title.innerHTML = param.value
   }
 
-  function updPos(name, left){
+  function updPos(name, position){
     let param = params[name];
-    let {point, body} = param;
-    left = Math.min(100, Math.max(0, left));
-    console.log(left)
-    point.style.left = `${left}%`
+    let {point, body, title, min, max, step, posStep} = param;
+    position = Math.min(1, Math.max(0, position));
+    position = Math.round(position / posStep) * posStep
+    let value = min + position * (max - min);
+    value = Math.round(value / step) * step;
+    value = value * 10000;
+    value = value - value % 1;
+    value = value / 10000;
+    title.innerHTML = value;
+    point.style.left = `${position * 100}%`
   }
 
   document.addEventListener('mousedown', (evt) => {
@@ -357,9 +307,9 @@ document.addEventListener('click', (evt) => {
     if (!classList.contains('ui-slider__body')) return;
     current = target;
     let pos = getMousePosOnElement(evt);
-    updPos(target.sliderId, pos.left / target.clientWidth * 100);
+    updPos(target.sliderId, pos.left / target.clientWidth);
     startDrag(evt, ({dx}) => {
-      updPos(target.sliderId, (pos.left + dx) / target.clientWidth * 100)
+      updPos(target.sliderId, (pos.left + dx) / target.clientWidth)
     })
   });
 }
