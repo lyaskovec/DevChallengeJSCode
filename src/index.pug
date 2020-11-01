@@ -14,10 +14,13 @@ html(lang='en')
     div(class='b-wrap')
       .canvas
         canvas#canvas(width='500' height='500')
-        #polygons
-        #point(style='transform: rotate(45deg)')
-          .end
-            .drop
+        div
+          #polygons
+          #point(style='transform: rotate(45deg)')
+            .drag(role='move')
+            .end
+              .drop(role='set')
+
       #controls.b-controls
         .ui-group
           .ui-group__title General
@@ -32,12 +35,14 @@ html(lang='en')
               input(type='number' min='0.1' max='0.9' value='0.4' step='0.1' name="attenuation")
 
             div Gravity
-              input(type='number' min='0' max='2000' value='980' step='1' name="gravity")
+              input(type='number' min='0' max='100' value='30' step='1' name="gravity")
 
             div Game speed
-              input(type='number' min='1' max='4' value='1' step='1' name="game")
+              input(type='number' min='1' max='10' value='5' step='1' name="game")
 
             button Start
+            button Pause
+            button Reset
 
         .ui-group
           .ui-group__title Information:
@@ -45,7 +50,9 @@ html(lang='en')
 
         .ui-group
           .ui-group__title.hide Obstacles
-          .ui-group__body
+          .ui-group__body.align-center
+            button Add an obstacle
+            button Add a line
             button Remove all
 
 

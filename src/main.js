@@ -1,17 +1,7 @@
 let canvas = ge('canvas');
 let ctx = canvas.getContext('2d');
-
-let padding = 0;
-let width = 500;
-let height = 500;
-let gY = -250 + Math.random() * 500;
-let gX = -250 + Math.random() * 500;
-gX = 0;
-gY = 9.8 * 100;
-Object.assign(canvas, {width: width + 2* padding, height: height + 2 * padding});
-
-
-let stop = true;
+let width, height = 500;
+let padding = 50;
 
 function len(a, b) {
   return Math.sqrt(Math.pow(a.x - b.x, 2), Math.pow(a.y - b.y, 2))
@@ -21,27 +11,18 @@ console.time('collision')
 
 
 let point = new Point(300, 100, 0, 250);
-ctx.beginPath();
-ctx.strokeStyle = 'red';
-ctx.fillStyle = 'red';
-ctx.arc(200 - 2, 200 - 2, 4, 0, 2 * Math.PI);
-ctx.fill()
-
 let items = [point];
 for(let i = 0; i < 3; i++) {
-  // items.push(new Line(Math.random() * 100, Math.random() * 100, Math.random() * 500, Math.random() * 500))
+  items.push(new Line(Math.random() * 100, Math.random() * 100, Math.random() * 500, Math.random() * 500))
 }
 
-// items.push(new Line(500, 50, 0, 50));
-// items.push(new Line(0, 500, 50, 0)); // left
-// items.push(new Line(500, 500, 0, 450)); // bottom
-// items.push(new Line(500, 0, 500, 500)); // right
-items.push(new Grid())
-// Підлога
-items.push(new Line(-100000, 470, 500000, 480));
+items.push(new Grid());
+
+// Floor item
+let floor = new Line(-10000000, height - padding, 5000000, height - padding);
+items.push(floor);
 
 let time = Date.now();
-
 let points = items.filter(item => item instanceof Point);
 let lines = items.filter(item => item instanceof Line);
 
@@ -61,23 +42,38 @@ function draw() {
   let delta = current - time;
   time = current;
   ctx.save();
-  ctx.clearRect(0, 0, width, 500);
-  items.forEach(item => item.upd && item.upd(delta / 1000));
+  items.forEach(item => item.upd && item.upd(delta / 1000 * params.game));
   ctx.scale(zoom.scale, zoom.scale);
+  ctx.clearRect(0, 0, width, 500);
   let {x, y} = point.p;
   let xx = 0;
   let yy = 0;
-  // if (x > 400) xx = -x + 200;
+  if (!point.paused) {
+    if (x > width - padding) {
+      xx = x - width + padding;
+    }
+    if (x < padding) {
+      xx = x - padding;
+    }
+    if (y > height - padding) {
+      yy = y - height + padding;
+    } else if (y < padding) {
+      yy = y - padding;
+    }
+  }
+
+  // xx = -20
+  // yy = -20
+
   // if (y > 400) yy = -y + 200;
   ctx.xx = xx;
   ctx.yy = yy;
-  canvas.style.backgroundPosition = `${parseInt(xx) % zoom.gridW}px ${parseInt(yy) % zoom.gridH}px `
-  logg({xx, yy})
-  ctx.translate(xx, yy);
+  canvas.style.backgroundPosition = `${-xx}px ${-yy}px `;
+  logg({xx, yy, x, y});
+  ctx.translate(-xx, -yy);
   items.forEach(item => item.draw && item.draw());
   ctx.restore();
-
-  stop  || requestAnimationFrame(draw);
+  requestAnimationFrame(draw);
 }
 
 requestAnimationFrame(draw);
@@ -97,57 +93,65 @@ requestAnimationFrame(draw);
 
 
 function pause() {
+  console.log('pause')
   stop = !stop;
   if (!stop) {
-    time = Date.now();
-    draw();
+    // time = Date.now();
+    // draw();
+
   }
+  point.paused = !point.paused
 }
 
-document.body.addEventListener('keydown', ({keyCode}) => {
-  keyCode === 32 && pause();
+document.body.addEventListener('keydown', (evt) => {
+  let {keyCode} = evt;
+  if (keyCode === 32) {
+    pause();
+    evt.preventDefault();
+  }
 });
 
+// Arrow controll
 {
-
-  let drop = document.querySelector('.drop');
-  let line = drop.parentElement;
-  let point = line.parentElement;
+  let dropElement = ge('point');
+  let line = dropElement.querySelector('.end');
   let start = false;
 
-  let hVector = new V(200, 200, 100, 0);
-  let mVector = new V(200, 200, 0, 0);
+  app.on('set.speed', (length) => line.style.height = (length) + 'px');
+  app.on('set.angle', (angle) => dropElement.style.transform = `translate(-50%, -50%) rotate(${180 - angle - 90}deg)`);
 
-  drop.addEventListener('mousedown', (evt) => {
-    let {pageX, pageY} = evt;
-    start = {pageX, pageY, x: mVector.v.x, y: mVector.v.y};
-    evt.preventDefault()
-  });
+  dropElement.addEventListener('mousedown', evt => {
+    let {target} = evt;
+    let role = target.getAttribute('role');
+    if (!role) return;
 
-  document.addEventListener('mousemove', ({pageX, pageY}) => {
-    if (start) {
-      let dy = pageY - start.pageY;
-      let dx = pageX - start.pageX;
-      mVector.v = {x: start.x + dx, y: start.y + dy};
-      mVector.update();
+    point.paused = true;
+    let {speed, angle} = params;
+    point.len(speed);
 
-      let angle = mVector.getAngle(hVector.n);
-      if (angle < 0) {
-        angle = 360 + angle
-      }
-
-      params.angle = angle;
-      params.speed = Math.min(mVector.l, 300);
-
-      console.log(params.angle)
-
-
+    // Move arrow
+    if (role === 'move') {
+      let {x, y} = point.p;
+      startDrag(evt, ({dx, dy}) => {
+        Object.assign(dropElement.style, {left: x + dx + 'px', top: y + dy + 'px'});
+        point.update({p: {x: x + dx, y: y + dy}});
+        draw()
+      })
     }
-  });
 
-  document.addEventListener('mouseup', ({pageY}) => {
-    if (start) {
-      start = false
+    // Set angle
+    if (role === 'set') {
+      start = {x: point.v.x, y: point.v.y};
+      startDrag(evt, ({dx, dy}) => {
+        point.update({v: {x: start.x + dx, y: start.y + dy}});
+        let angle = point.getAngle(floor.n);
+        if (angle < 0) {
+          angle = 360 + angle
+        }
+        params.angle = angle;
+        params.speed = Math.min(point.l, 1000);
+        draw()
+      })
     }
   });
 }
@@ -176,11 +180,11 @@ items.push(poligon);
     fun && fun({dy: pageY - start.pageY, dx: pageX - start.pageX, type})
   }
 
-  document.addEventListener('mousemove', (evt) => {
+  document.addEventListener('mousemove', ((evt) => {
     if (start) {
       result(evt)
     }
-  });
+  }).throttle(15));
 
   document.addEventListener('mouseup', (evt) => {
     if (start) {
@@ -237,12 +241,4 @@ canvas.addEventListener('mousemove', evt => {
     ctx.pos = false
   }
 });
-
-{
-  let drop = document.querySelector('.drop');
-  let line = drop.parentElement;
-  let point = line.parentElement;
-  app.on('set.speed', (length) => line.style.height = length + 'px');
-  app.on('set.angle', (angle) => point.style.transform = `rotate(${180 - angle - 90}deg)`);
-}
 

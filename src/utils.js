@@ -95,3 +95,20 @@ function getMousePosOnElement(e) {
   let rect = e.target.getBoundingClientRect();
   return {left: e.clientX - rect.left, top: e.clientY - rect.top}
 }
+
+Function.prototype.throttle = function (milliseconds, context) {
+  let baseFunction = this,
+    lastEventTimestamp = null,
+    limit = milliseconds;
+
+  return function () {
+    let self = context || this,
+      args = arguments,
+      now = Date.now();
+
+    if (!lastEventTimestamp || now - lastEventTimestamp >= limit) {
+      lastEventTimestamp = now;
+      baseFunction.apply(self, args);
+    }
+  };
+};

@@ -38,7 +38,7 @@ canvas {
 .b-wrap
   display flex
   height 500px
-  border 2px solid silver
+  box-shadow 1px 1px 10px #c0c0c0
   background white
   margin 10px
 
@@ -62,7 +62,6 @@ canvas {
   background: white;
   overflow: hidden;
   flex: 1;
-  border-right: 2px solid silver;
 }
 
 #point {
@@ -75,27 +74,22 @@ canvas {
   left 200px
   top 200px
   .end {
-    width 3px
-    height 0px
-    background red
+    width 0
+    height 0
     position absolute
     bottom 0
     left 50%
     transform translate(-50%, -10px)
-    &:before, &:after {
-      content ""
-      background red
-      position absolute
-      top 0
-      right 0
-      height 15px
-      width 3px
-      transform rotate(30deg)
-      transform-origin right top
-    }
+    z-index 1
     &:after {
-      transform-origin left top
-      transform rotate(333deg)
+      left: -1px;
+      right: -1px;
+      top: 0;
+      bottom: 0;
+      background: #f00;
+      content: '';
+      pointer-events: none;
+      position: absolute;
     }
   }
   .drop {
@@ -108,7 +102,34 @@ canvas {
     left 50%
     transform translate(-50%, -50%)
     cursor grab
+    z-index 2
+    background #fff5
+    &:before, &:after {
+      content: "";
+      background: #f00;
+      position: absolute;
+      top: 11px;
+      right: 9px;
+      height: 15px;
+      width: 2px;
+      transform: rotate(30deg);
+      transform-origin: right top;
+    }
+    &:after {
+      transform-origin left top
+      transform rotate(333deg)
+    }
+  }
+
+  .drag {
+    position absolute
+    left 0
+    right 0
+    top 0
+    bottom 0
+    cursor move
     z-index 1
+    background #fff5
   }
 }
 

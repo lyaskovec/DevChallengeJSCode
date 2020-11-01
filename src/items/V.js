@@ -4,7 +4,8 @@ class V {
     this.v = {x: vx, y: vy};
     this.update();
   }
-  update() {
+  update(params) {
+    Object.assign(this, params);
     this.l = Math.sqrt(Math.pow(this.v.x, 2) + Math.pow(this.v.y, 2));
     this.n = {x: this.v.x / this.l, y: this.v.y / this.l};
     return this;

@@ -2,43 +2,38 @@ class Point extends V {
   constructor(...args) {
     super(...args);
     this.lines = [];
+    this.paused = true;
     this.next = {x: 0, y: 0};
   }
   draw(){
+    let {p, n} = this;
     ctx.beginPath();
-    ctx.arc(this.p.x, this.p.y, 4, 0, 2 * Math.PI);
+    ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x + 25 * n.x, p.y + 25 * n.y);
+    ctx.stroke();
     ctx.fill();
   }
 
   upd(time) {
-    this.v.y += gY * time;
-    this.v.x += gX * time;
-    this.draw2(time)
+    if (!this.paused) {
+      let {gravity} = params;
+      this.v.y += gravity * time;
+      this.draw2(time)
+    }
   }
 
   draw2(time) {
 
-
-
-    let start = Date.now();
-
     this.next.x = this.p.x + this.v.x * time;
     this.next.y = this.p.y + this.v.y * time;
-    this.v.y += gY * time;
-    this.v.x += gX * time;
-    this.update();
 
     if (this.collisions(time)) return;
 
-    this.p.x = this.next.x;
-    this.p.y = this.next.y;
+    this.update({p: {x: this.next.x, y: this.next.y}});
+
     let {x, y} = this.p;
     logg({x: this.p.x, y: this.p.y, v: this.l});
-    ctx.fillStyle = this.isCollision ? 'red' : 'blue';
-    ctx.strokeStyle = 'blue';
-    ctx.beginPath();
-    ctx.arc(this.p.x, this.p.y, 1, 0, 2 * Math.PI);
-    ctx.stroke();
     this.draw()
   }
 
@@ -84,7 +79,7 @@ class Point extends V {
       this.v.x = newVV.v.x;
       this.v.y = newVV.v.y;
       this.update();
-      this.len(this.l * 0.5);
+      this.len(this.l * (1 - params.attenuation));
       if (Number.isNaN(ang)) {
         debugger
       }
