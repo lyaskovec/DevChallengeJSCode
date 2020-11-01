@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "watch": "gulp watch",
-    "prod": "cross-env PRODUCT=1 gulp build"
+    "prod": "cross-env PRODUCT=1 gulp default"
   },
   "author": "",
   "license": "ISC",

@@ -1,6 +1,8 @@
 const destinationFolder = 'build';
 const { src, dest, watch,  series, parallel, start} = require('gulp');
-let IS_PRODUCT = process.env.PRODUCT;
+let IS_PRODUCT = !!process.env.PRODUCT;
+
+console.log('IS_PRODUCT ==> ', IS_PRODUCT);
 
 let gulp = require('gulp'),
   gulpif = require('gulp-if'),
