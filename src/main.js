@@ -12,6 +12,7 @@ let items = [point];
 items.push(Poligon.fromArray([[450, 400], [500, 250], [500, 150], [580, 200],  [600, 450], [480, 450]]));
 items.push(Poligon.fromArray(createStartItems(450, 400, 7)))
 items.push(new Grid());
+logg({'Current speed': 0, 'Total way': 0, 'Total way on X': 0, 'Total way on Y': 0})
 
 // Floor item
 let floor = new Line(-10000000, height - padding, 5000000, height - padding);

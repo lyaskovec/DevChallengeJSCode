@@ -50,7 +50,7 @@ let app = new Proxy({
     items = items.filter(item => !item.obstacle)
   },
   reset() {
-    logg({x: 0, y: 0, 'Current speed': 0, 'Total way': 0, 'Total way on X': 0, 'Total way on Y': 0})
+    logg({x: 0, y: 0, 'Current speed': 0, 'Total way': 0, 'Total way on X': 0, 'Total way on Y': 0});
     this.angle = 45;
     this.speed = 50;
     point.update({p: {x: 100, y: height - padding}, v: {x: 250, y: -250}});
