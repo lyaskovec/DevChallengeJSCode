@@ -31,8 +31,8 @@ class V {
     let {v} = this;
     let cos = Math.cos(ang);
     let sin = Math.sin(ang);
-    this.v = {x: Math.round(10000 * (v.x * cos - v.y * sin)) / 10000, y: Math.round(10000 * (v.x * sin + v.y * cos)) / 10000};
-    return this.update()
+    // this.v = {x: Math.round(10000 * (v.x * cos - v.y * sin)) / 10000, y: Math.round(10000 * (v.x * sin + v.y * cos)) / 10000};
+    return this.update({v: {x: Math.round(10000 * (v.x * cos - v.y * sin)) / 10000, y: Math.round(10000 * (v.x * sin + v.y * cos)) / 10000}})
   }
   clone(){
     let {p, v} = this;

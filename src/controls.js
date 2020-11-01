@@ -45,8 +45,6 @@ const params = app.params = new Proxy(app.params, {
     item.style.backgroundImage = `url(${url})`;
     img.onload = () => {
       let {width, height} = img;
-      zoom.gridW = width;
-      zoom.gridH = height;
       imgMap[id] = {width, height, url}
     };
     img.src = url

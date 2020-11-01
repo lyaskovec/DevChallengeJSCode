@@ -20,27 +20,12 @@ let floor = new Line(-10000000, height - padding, 5000000, height - padding);
 items.push(floor);
 
 let time = Date.now();
-let points = items.filter(item => item instanceof Point);
-let lines = items.filter(item => item instanceof Line);
-
-
-points.forEach(point => point.lines = lines);
-
-let zoom = {
-  scale: 1,
-  x: 0,
-  y: 0,
-  gridW: 360,
-  gridH: 360
-};
-
 function draw() {
   let current = Date.now();
   let delta = current - time;
   time = current;
   ctx.save();
   items.forEach(item => item.upd && item.upd(delta / 1000 * params.game));
-  ctx.scale(zoom.scale, zoom.scale);
   ctx.clearRect(0, 0, width, 500);
   let {x, y} = point.p;
   let xx = 0;
