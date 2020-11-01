@@ -18,17 +18,19 @@ let floor = new Line(-10000000, height - padding, 5000000, height - padding);
 items.push(floor);
 
 let time = Date.now();
+
 function draw() {
   let current = Date.now();
+  let {game, paused} = app;
   let delta = current - time;
   time = current;
   ctx.save();
-  items.forEach(item => item.upd && item.upd(delta / 1000 * app.game));
+  items.forEach(item => item.upd && item.upd(delta / 1000 * game));
   ctx.clearRect(0, 0, width, 500);
   let {x, y} = point.p;
   let xx = 0;
   let yy = 0;
-  if (!stopped) {
+  if (!paused) {
     if (x > width - padding) {
       xx = x - width + padding;
     }
@@ -40,14 +42,14 @@ function draw() {
     } else if (y < padding) {
       yy = y - padding;
     }
+    ctx.xx = xx;
+    ctx.yy = yy;
   }
 
-  ctx.xx = xx;
-  ctx.yy = yy;
-  Object.assign(ge('ll').style, {left: -xx + 'px', top: -yy + 'px'})
+  Object.assign(ge('ll').style, {left: -ctx.xx + 'px', top: -ctx.yy + 'px'})
   canvas.style.backgroundPosition = `${-xx}px ${-yy}px `;
   logg({xx, yy, x, y});
-  ctx.translate(-xx, -yy);
+  ctx.translate(-ctx.xx, -ctx.yy);
   items.forEach(item => item.draw && item.draw());
   ctx.restore();
   requestAnimationFrame(draw);
@@ -56,24 +58,13 @@ function draw() {
 requestAnimationFrame(draw);
 
 
-function pause() {
-  console.log('pause');
-  stop = !stop;
-  stopped = false
-  point.paused = !point.paused;
-}
-
 document.body.addEventListener('keydown', (evt) => {
   let {keyCode} = evt;
   if (keyCode === 32) {
-    pause();
+    app.pause();
     evt.preventDefault();
   }
 });
-
-app.on('finished', ()=> {
-  console.log('this: ')
-})
 
 // Arrow controll
 {
@@ -83,13 +74,19 @@ app.on('finished', ()=> {
 
   app.on('set.speed', (length) => line.style.height = (length) + 'px');
   app.on('set.angle', (angle) => dropElement.style.transform = `translate(-50%, -50%) rotate(${180 - angle - 90}deg)`);
+  app.on('set.paused', value => {
+    value ? show(dropElement) : hide(dropElement);
+    if (value) {
+      let {x, y} = point.p;
+      Object.assign(dropElement.style, {left: x + 'px', top: y + 'px'});
+    }
+  });
 
   dropElement.addEventListener('mousedown', evt => {
     let {target} = evt;
     let role = target.getAttribute('role');
     if (!role) return;
 
-    point.paused = true;
     let {speed, angle} = app;
     point.len(speed);
 
@@ -128,7 +125,7 @@ document.addEventListener('click', (evt) => {
   }
 });
 
-const updateSize = window.onresize = ()=> {
+const updateSize = window.onresize = () => {
   width = canvas.width = canvas.clientWidth
 };
 
@@ -138,7 +135,7 @@ updateSize();
   let start = false;
   let fun = false;
 
-  function result({pageX, pageY, type}){
+  function result({pageX, pageY, type}) {
     fun && fun({dy: pageY - start.pageY, dx: pageX - start.pageX, type})
   }
 
@@ -155,11 +152,12 @@ updateSize();
     }
   });
 
-  function startDrag(evt, callback){
+  function startDrag(evt, callback) {
     let {pageX, pageY} = evt;
     start = {pageX, pageY};
     fun = callback;
     evt.preventDefault()
   }
+
   window.startDrag = startDrag;
 }

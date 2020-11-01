@@ -3,6 +3,7 @@ let app = new Proxy({
   events: {},
   started: false,
   finished: false,
+  paused: true,
   background: 'image',
   on(event, fun) {
     this.events[event] = this.events[event] || [];
@@ -17,11 +18,11 @@ let app = new Proxy({
     line.obstacle = true;
     items.push(line)
   },
-  addObstacle(index){
+  addObstacle(index) {
     let x = cX = Math.random() * width;
-    let y  = cY = Math.random() * height
+    let y = cY = Math.random() * height
     let patterns = [
-      ()=>{
+      () => {
         let w = 100 + Math.random() * 150;
         let h = 100 + Math.random() * 150;
         let poligon = new Poligon();
@@ -31,36 +32,36 @@ let app = new Proxy({
         poligon.push({x, y: y + w});
         return poligon;
       },
-      ()=> {
+      () => {
         let w = 100 + Math.random() * 250;
         let h = 100 + Math.random() * 250;
         let kf = 0.8;
         let kt = 1.2;
         let poligon = new Poligon();
         poligon.push({x: x * rand(kf, kt), y: y * rand(kf, kt)});
-        poligon.push({x: (x + w / 2)* rand(kf, kt), y: (y + h / 2) * rand(kf, kt)});
-        poligon.push({x: (x - w / 2)* rand(kf, kt), y: (y + h / 2) * rand(kf, kt)});
+        poligon.push({x: (x + w / 2) * rand(kf, kt), y: (y + h / 2) * rand(kf, kt)});
+        poligon.push({x: (x - w / 2) * rand(kf, kt), y: (y + h / 2) * rand(kf, kt)});
         return poligon;
       },
       function star() {
-        let n = parseInt(rand(5, 9))
+        let n = parseInt(rand(5, 9));
         let r = rand(50, 200);
         let poligon = new Poligon();
-        poligon.push({x: cX + r, y: cY})
+        poligon.push({x: cX + r, y: cY});
 
         //star draw
-        for(let i = 1; i <= n * 2; i++) {
+        for (let i = 1; i <= n * 2; i++) {
           let x, y, theta;
-          if(i % 2 === 0){
+          if (i % 2 === 0) {
             theta = i * (Math.PI * 2) / (n * 2);
             x = cX + (r * Math.cos(theta));
             y = cY + (r * Math.sin(theta));
           } else {
             theta = i * (Math.PI * 2) / (n * 2);
-            x = cX + ((r/2) * Math.cos(theta));
-            y = cY + ((r/2) * Math.sin(theta));
+            x = cX + ((r / 2) * Math.cos(theta));
+            y = cY + ((r / 2) * Math.sin(theta));
           }
-          poligon.push({x ,y});
+          poligon.push({x, y});
         }
         return poligon
       }
@@ -80,10 +81,10 @@ let app = new Proxy({
       first = item
     })
   },
-  clear(){
+  clear() {
     items = items.filter(item => !item.obstacle)
   },
-  reset(){
+  reset() {
 
   },
   init() {
@@ -103,6 +104,9 @@ let app = new Proxy({
       })
     )
   },
+  pause() {
+    this.paused = !this.paused
+  },
   add(item) {
     return item;
   }
@@ -113,29 +117,8 @@ let app = new Proxy({
     obj.emit('set.' + key, value);
     obj.emit('set', key, value);
     return true;
-  }
+  },
 });
-
-// app = new Proxy(app, {
-//   set(app, key, value) {
-//     if (app[key] === value) return false;
-//     app[key] = value;
-//     app.emit('set.' + key, value);
-//     app.emit('set', key, value);
-//     return true;
-//   }
-// });
-
-// const params = app
-// const params = app.params = new Proxy(app.params, {
-//   set(obj, key, value) {
-//     if (obj[key] === value) return false;
-//     obj[key] = value;
-//     app.emit('set.' + key, value);
-//     app.emit('set', key, value);
-//     return true;
-//   }
-// });
 
 
 // Working with images
@@ -143,14 +126,20 @@ let app = new Proxy({
   let inputFile = ge('selectFile');
   let images = ge('images');
   let list = Array.from(images.querySelectorAll('.ui-image.item'));
-  let imgMap = {none: {width: 100000, height: 10000, url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='}};
+  let imgMap = {
+    none: {
+      width: 100000,
+      height: 10000,
+      url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+    }
+  };
 
   list.forEach(item => {
     let url = item.getAttribute('data-img');
     addImage(item, url);
   });
 
-  function addImage(item, url){
+  function addImage(item, url) {
     let img = new Image();
     let id = Math.random();
     item.imageId = id;
@@ -204,7 +193,7 @@ let app = new Proxy({
         imgMap[key] = {width: value, height: value, url: createGridImage(value)}
       }
       app.background === 'grid' && (app.bg = key);
-    } else if (['background'].indexOf(name) >-1) {
+    } else if (['background'].indexOf(name) > -1) {
       background === 'grid' && (app.bg = `grid:` + grid);
       background === 'image' && (app.bg = img);
       background === 'none' && (app.bg = 'none');
@@ -213,9 +202,6 @@ let app = new Proxy({
     }
   });
 }
-
-
-
 
 
 // Add sliders instead of number inputs
@@ -241,7 +227,7 @@ let app = new Proxy({
     param.node = node;
     Array.from(node.querySelectorAll('[ref]')).forEach(item => param[item.getAttribute('ref')] = item);
     param.body.sliderId = name;
-    param.posStep = 1 / ((max - min) / step );
+    param.posStep = 1 / ((max - min) / step);
     app[name] = param.value
   });
 
@@ -252,7 +238,7 @@ let app = new Proxy({
     param.title.innerHTML = param.value
   }
 
-  function updPos(name, position){
+  function updPos(name, position) {
     let param = inputs[name];
     let {point, body, title, min, max, step, posStep} = param;
     position = Math.min(1, Math.max(0, position));

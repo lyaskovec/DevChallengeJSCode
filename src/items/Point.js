@@ -17,8 +17,8 @@ class Point extends V {
   }
 
   upd(time) {
-    if (!this.paused) {
-      let {gravity} = app;
+    let {paused, gravity} = app;
+    if (!paused) {
       this.v.y += gravity * time;
       this.draw2(time)
     }

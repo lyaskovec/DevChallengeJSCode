@@ -117,3 +117,11 @@ function rand(from, to, int) {
   let value = from + (to - from) * Math.random();
   return int ? parseInt(value) : value;
 }
+
+function hide(el) {
+  el.style.display = 'none'
+}
+
+function show(el) {
+  el.style.display = ''
+}
