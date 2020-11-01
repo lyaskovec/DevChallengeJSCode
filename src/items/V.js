@@ -26,13 +26,18 @@ class V {
     ctx.stroke();
     return this;
   }
+
   rotate(ang) {
     ang = ang * (Math.PI / 180);
     let {v} = this;
     let cos = Math.cos(ang);
     let sin = Math.sin(ang);
-    // this.v = {x: Math.round(10000 * (v.x * cos - v.y * sin)) / 10000, y: Math.round(10000 * (v.x * sin + v.y * cos)) / 10000};
-    return this.update({v: {x: Math.round(10000 * (v.x * cos - v.y * sin)) / 10000, y: Math.round(10000 * (v.x * sin + v.y * cos)) / 10000}})
+    return this.update({
+      v: {
+        x: Math.round(10000 * (v.x * cos - v.y * sin)) / 10000,
+        y: Math.round(10000 * (v.x * sin + v.y * cos)) / 10000
+      }
+    })
   }
   clone(){
     let {p, v} = this;
@@ -51,8 +56,7 @@ class V {
   }
   len(length) {
     let {n} = this;
-    this.v = {x: n.x * length, y: n.y * length};
-    this.update();
+    this.update({v: {x: n.x * length, y: n.y * length}});
     return this;
   }
 

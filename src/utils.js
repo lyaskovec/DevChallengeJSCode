@@ -112,3 +112,8 @@ Function.prototype.throttle = function (milliseconds, context) {
     }
   };
 };
+
+function rand(from, to, int) {
+  let value = from + (to - from) * Math.random();
+  return int ? parseInt(value) : value;
+}

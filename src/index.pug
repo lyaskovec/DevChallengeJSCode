@@ -11,11 +11,10 @@ html(lang='en')
           .ui-slider__body(ref='body')
             .ui-slider__point(ref='point')
         .ui-slider__value(ref='title')
-    div(class='b-wrap')
+    #app(class='b-wrap')
       .canvas
         canvas#canvas(width='500' height='500')
-        div
-          #polygons
+        #ll
           #point(style='transform: rotate(45deg)')
             .drag(role='move')
             .end
@@ -40,20 +39,24 @@ html(lang='en')
             div Game speed
               input(type='number' min='1' max='10' value='5' step='1' name="game")
 
-            button Start
-            button Pause
-            button Reset
+            .align-center
+              button(data-action='start') Start
+              button Pause
+              button(onclick='app.reset()') Reset
 
         .ui-group
           .ui-group__title Information:
           #logs.ui-group__body
 
         .ui-group
-          .ui-group__title.hide Obstacles
+          .ui-group__title.hide Add obstacles
           .ui-group__body.align-center
-            button Add an obstacle
-            button Add a line
-            button Remove all
+            button(onclick='app.addObstacle(0)') Rect
+            button(onclick='app.addObstacle(1)') Triangulate
+            button(onclick='app.addObstacle(2)') Star
+            button(onclick='app.addLine()') Line
+            hr
+            button(onclick='app.clear()') Remove all
 
 
         .ui-group

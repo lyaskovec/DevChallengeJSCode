@@ -7,11 +7,9 @@ function len(a, b) {
   return Math.sqrt(Math.pow(a.x - b.x, 2), Math.pow(a.y - b.y, 2))
 }
 
-let point = new Point(300, 100, 0, 250);
+let point = new Point(100, height - padding, 250, -250);
 let items = [point];
-for(let i = 0; i < 3; i++) {
-  items.push(new Line(Math.random() * 100, Math.random() * 100, Math.random() * 500, Math.random() * 500))
-}
+let stopped = true
 
 items.push(new Grid());
 
@@ -25,12 +23,12 @@ function draw() {
   let delta = current - time;
   time = current;
   ctx.save();
-  items.forEach(item => item.upd && item.upd(delta / 1000 * params.game));
+  items.forEach(item => item.upd && item.upd(delta / 1000 * app.game));
   ctx.clearRect(0, 0, width, 500);
   let {x, y} = point.p;
   let xx = 0;
   let yy = 0;
-  if (!point.paused) {
+  if (!stopped) {
     if (x > width - padding) {
       xx = x - width + padding;
     }
@@ -46,6 +44,7 @@ function draw() {
 
   ctx.xx = xx;
   ctx.yy = yy;
+  Object.assign(ge('ll').style, {left: -xx + 'px', top: -yy + 'px'})
   canvas.style.backgroundPosition = `${-xx}px ${-yy}px `;
   logg({xx, yy, x, y});
   ctx.translate(-xx, -yy);
@@ -60,6 +59,7 @@ requestAnimationFrame(draw);
 function pause() {
   console.log('pause');
   stop = !stop;
+  stopped = false
   point.paused = !point.paused;
 }
 
@@ -70,6 +70,10 @@ document.body.addEventListener('keydown', (evt) => {
     evt.preventDefault();
   }
 });
+
+app.on('finished', ()=> {
+  console.log('this: ')
+})
 
 // Arrow controll
 {
@@ -86,7 +90,7 @@ document.body.addEventListener('keydown', (evt) => {
     if (!role) return;
 
     point.paused = true;
-    let {speed, angle} = params;
+    let {speed, angle} = app;
     point.len(speed);
 
     // Move arrow
@@ -94,7 +98,8 @@ document.body.addEventListener('keydown', (evt) => {
       let {x, y} = point.p;
       startDrag(evt, ({dx, dy}) => {
         Object.assign(dropElement.style, {left: x + dx + 'px', top: y + dy + 'px'});
-        point.update({p: {x: x + dx, y: y + dy}});
+        point.update({p: {x: x + dx, y: Math.min(y + dy, height - padding - 0.1)}});
+        logg({'sssssss': Math.max(y + dy, height - padding - 0.1)});
         draw()
       })
     }
@@ -108,8 +113,8 @@ document.body.addEventListener('keydown', (evt) => {
         if (angle < 0) {
           angle = 360 + angle
         }
-        params.angle = angle;
-        params.speed = Math.min(point.l, 1000);
+        app.angle = angle;
+        app.speed = Math.min(point.l, 1000);
         draw()
       })
     }

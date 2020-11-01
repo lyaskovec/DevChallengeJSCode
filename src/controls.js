@@ -1,5 +1,9 @@
-let app = {
+let app = new Proxy({
+  items: [],
   events: {},
+  started: false,
+  finished: false,
+  background: 'image',
   on(event, fun) {
     this.events[event] = this.events[event] || [];
     this.events[event].push(fun);
@@ -8,22 +12,130 @@ let app = {
     this.events[event] && this.events[event].forEach(fun => fun.apply(this, args));
     return this;
   },
-  params: {
-    background: 'image'
+  addLine() {
+    let line = new Line(Math.random() * width, Math.random() * height, Math.random() * width, Math.random() * height);
+    line.obstacle = true;
+    items.push(line)
+  },
+  addObstacle(index){
+    let x = cX = Math.random() * width;
+    let y  = cY = Math.random() * height
+    let patterns = [
+      ()=>{
+        let w = 100 + Math.random() * 150;
+        let h = 100 + Math.random() * 150;
+        let poligon = new Poligon();
+        poligon.push({x, y});
+        poligon.push({x: x + w, y: y});
+        poligon.push({x: x + w, y: y + w});
+        poligon.push({x, y: y + w});
+        return poligon;
+      },
+      ()=> {
+        let w = 100 + Math.random() * 250;
+        let h = 100 + Math.random() * 250;
+        let kf = 0.8;
+        let kt = 1.2;
+        let poligon = new Poligon();
+        poligon.push({x: x * rand(kf, kt), y: y * rand(kf, kt)});
+        poligon.push({x: (x + w / 2)* rand(kf, kt), y: (y + h / 2) * rand(kf, kt)});
+        poligon.push({x: (x - w / 2)* rand(kf, kt), y: (y + h / 2) * rand(kf, kt)});
+        return poligon;
+      },
+      function star() {
+        let n = parseInt(rand(5, 9))
+        let r = rand(50, 200);
+        let poligon = new Poligon();
+        poligon.push({x: cX + r, y: cY})
+
+        //star draw
+        for(let i = 1; i <= n * 2; i++) {
+          let x, y, theta;
+          if(i % 2 === 0){
+            theta = i * (Math.PI * 2) / (n * 2);
+            x = cX + (r * Math.cos(theta));
+            y = cY + (r * Math.sin(theta));
+          } else {
+            theta = i * (Math.PI * 2) / (n * 2);
+            x = cX + ((r/2) * Math.cos(theta));
+            y = cY + ((r/2) * Math.sin(theta));
+          }
+          poligon.push({x ,y});
+        }
+        return poligon
+      }
+    ];
+
+    let poligon = patterns[index]();
+    poligon.obstacle = true;
+    items.push(poligon);
+    let list = Array.from(poligon.items);
+    let first = list[0];
+    list.push(first);
+    list.forEach(item => {
+      let line = new Line(first.x, first.y, item.x, item.y);
+      line.obstacle = true;
+      items.push(line);
+      console.log('Line', line)
+      first = item
+    })
+  },
+  clear(){
+    items = items.filter(item => !item.obstacle)
+  },
+  reset(){
+
+  },
+  init() {
+    this.el = ge('app');
+    Object.keys(this.data).forEach(key =>
+      Object.defineProperty(module, key, {
+        set(value) {
+          if (this.data[key] !== value) {
+            this.data[key] = value;
+            this.emit(key, value)
+          }
+        },
+        get() {
+          this._watch && (module._watch[key] = 1);
+          return this.data[key]
+        }
+      })
+    )
+  },
+  add(item) {
+    return item;
   }
-};
-
-
-const params = app.params = new Proxy(app.params, {
+}, {
   set(obj, key, value) {
     if (obj[key] === value) return false;
     obj[key] = value;
-    console.log('set: ', key, value);
-    app.emit('set.' + key, value);
-    app.emit('set', key, value);
+    obj.emit('set.' + key, value);
+    obj.emit('set', key, value);
     return true;
   }
 });
+
+// app = new Proxy(app, {
+//   set(app, key, value) {
+//     if (app[key] === value) return false;
+//     app[key] = value;
+//     app.emit('set.' + key, value);
+//     app.emit('set', key, value);
+//     return true;
+//   }
+// });
+
+// const params = app
+// const params = app.params = new Proxy(app.params, {
+//   set(obj, key, value) {
+//     if (obj[key] === value) return false;
+//     obj[key] = value;
+//     app.emit('set.' + key, value);
+//     app.emit('set', key, value);
+//     return true;
+//   }
+// });
 
 
 // Working with images
@@ -72,7 +184,7 @@ const params = app.params = new Proxy(app.params, {
         let {imageId} = target;
         list.forEach(item => item !== target && item.classList.remove('selected'));
         classList.add('selected');
-        params.img = imageId;
+        app.img = imageId;
       }
     }
   });
@@ -83,19 +195,19 @@ const params = app.params = new Proxy(app.params, {
   }
 
   app.on('set', (name, value) => {
-    let {img, grid, background, bg} = params;
+    let {img, grid, background, bg} = app;
     if (name === 'img') {
-      background === 'image' && (params.bg = img)
+      background === 'image' && (app.bg = img)
     } else if (name === 'grid') {
       let key = 'grid:' + value;
       if (!imgMap[key]) {
         imgMap[key] = {width: value, height: value, url: createGridImage(value)}
       }
-      params.background === 'grid' && (params.bg = key);
+      app.background === 'grid' && (app.bg = key);
     } else if (['background'].indexOf(name) >-1) {
-      background === 'grid' && (params.bg = `grid:` + grid);
-      background === 'image' && (params.bg = img);
-      background === 'none' && (params.bg = 'none');
+      background === 'grid' && (app.bg = `grid:` + grid);
+      background === 'image' && (app.bg = img);
+      background === 'none' && (app.bg = 'none');
     } else if (name === 'bg') {
       setBg()
     }
@@ -130,7 +242,7 @@ const params = app.params = new Proxy(app.params, {
     Array.from(node.querySelectorAll('[ref]')).forEach(item => param[item.getAttribute('ref')] = item);
     param.body.sliderId = name;
     param.posStep = 1 / ((max - min) / step );
-    params[name] = param.value
+    app[name] = param.value
   });
 
   function upd(name) {
@@ -163,10 +275,10 @@ const params = app.params = new Proxy(app.params, {
     current = target;
     let pos = getMousePosOnElement(evt);
     updPos(name, pos.left / target.clientWidth);
-    params[name] = inputs[name].value;
+    app[name] = inputs[name].value;
     startDrag(evt, ({dx}) => {
       updPos(target.sliderId, (pos.left + dx) / target.clientWidth)
-      params[name] = inputs[name].value;
+      app[name] = inputs[name].value;
     })
   });
 }
@@ -174,5 +286,5 @@ const params = app.params = new Proxy(app.params, {
 
 document.addEventListener('input', (evt) => {
   let {target} = evt;
-  params[target.name] = target.value
+  app[target.name] = target.value
 });
