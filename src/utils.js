@@ -74,7 +74,7 @@ function checkCollision(x1, y1, x2, y2, x3, y3, x4, y4){
 }
 
 
-function createGridImage(size, color = 'red'){
+function createGridImage(size, color = 'rgba(0,0,0,0.2)') {
   if (!this._gridCanvas) {
     this._gridCanvas = crEl('canvas', {style: 'position: absolute; left: -100000; top: -10000px'});
   }
@@ -87,8 +87,8 @@ function createGridImage(size, color = 'red'){
   return this._gridCanvas.toDataURL();
 }
 
-function radians_to_degrees(radians){
-  return radians * (180/Math.PI);
+function radians_to_degrees(radians) {
+  return radians * (180 / Math.PI);
 }
 
 function getMousePosOnElement(e) {

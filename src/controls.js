@@ -8,7 +8,9 @@ let app = {
     this.events[event] && this.events[event].forEach(fun => fun.apply(this, args));
     return this;
   },
-  params: {}
+  params: {
+    background: 'image'
+  }
 };
 
 
@@ -16,6 +18,7 @@ const params = app.params = new Proxy(app.params, {
   set(obj, key, value) {
     if (obj[key] === value) return false;
     obj[key] = value;
+    console.log('set: ', key, value);
     app.emit('set.' + key, value);
     app.emit('set', key, value);
     return true;
@@ -28,7 +31,7 @@ const params = app.params = new Proxy(app.params, {
   let inputFile = ge('selectFile');
   let images = ge('images');
   let list = Array.from(images.querySelectorAll('.ui-image.item'));
-  let imgMap = {};
+  let imgMap = {none: {width: 100000, height: 10000, url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='}};
 
   list.forEach(item => {
     let url = item.getAttribute('data-img');
@@ -71,8 +74,32 @@ const params = app.params = new Proxy(app.params, {
         let {imageId} = target;
         list.forEach(item => item !== target && item.classList.remove('selected'));
         classList.add('selected');
-        canvas.style.backgroundImage = `url(${imgMap[imageId].url})`
+        params.img = imageId;
       }
+    }
+  });
+
+  function setBg() {
+    let {bg} = params;
+    canvas.style.backgroundImage = `url(${imgMap[bg].url})`
+  }
+
+  app.on('set', (name, value) => {
+    let {img, grid, background, bg} = params;
+    if (name === 'img') {
+      background === 'image' && (params.bg = img)
+    } else if (name === 'grid') {
+      let key = 'grid:' + value;
+      if (!imgMap[key]) {
+        imgMap[key] = {width: value, height: value, url: createGridImage(value)}
+      }
+      params.background === 'grid' && (params.bg = key);
+    } else if (['background'].indexOf(name) >-1) {
+      background === 'grid' && (params.bg = `grid:` + grid);
+      background === 'image' && (params.bg = img);
+      background === 'none' && (params.bg = 'none');
+    } else if (name === 'bg') {
+      setBg()
     }
   });
 }
@@ -85,8 +112,15 @@ const params = app.params = new Proxy(app.params, {
 {
   let inputs = {};
   let current = false;
-  window.par = inputs;
   let sliderNode = document.querySelector('.ui-slider');
+
+  app.on('set', (name, value) => {
+    if (inputs[name]) {
+      inputs[name].value = value;
+      upd(name)
+    }
+  });
+
   Array.from(document.querySelectorAll('input[type=number]')).forEach(input => {
     let node = sliderNode.cloneNode(true);
     input.parentNode.insertBefore(node, input);
@@ -98,7 +132,7 @@ const params = app.params = new Proxy(app.params, {
     Array.from(node.querySelectorAll('[ref]')).forEach(item => param[item.getAttribute('ref')] = item);
     param.body.sliderId = name;
     param.posStep = 1 / ((max - min) / step );
-    upd(name)
+    params[name] = param.value
   });
 
   function upd(name) {
@@ -137,13 +171,6 @@ const params = app.params = new Proxy(app.params, {
       params[name] = inputs[name].value;
     })
   });
-
-  app.on('set', (name, value) => {
-    if (inputs[name]) {
-      inputs[name].value = value;
-      upd(name)
-    }
-  })
 }
 
 

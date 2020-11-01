@@ -11,8 +11,7 @@ gY = 9.8 * 100;
 Object.assign(canvas, {width: width + 2* padding, height: height + 2 * padding});
 
 
-let paused = false;
-let stop = false;
+let stop = true;
 
 function len(a, b) {
   return Math.sqrt(Math.pow(a.x - b.x, 2), Math.pow(a.y - b.y, 2))
@@ -115,9 +114,6 @@ document.body.addEventListener('keydown', ({keyCode}) => {
   let line = drop.parentElement;
   let point = line.parentElement;
   let start = false;
-  let h = 50;
-  let w = 3;
-  let d = 0;
 
   let hVector = new V(200, 200, 100, 0);
   let mVector = new V(200, 200, 0, 0);
@@ -135,14 +131,22 @@ document.body.addEventListener('keydown', ({keyCode}) => {
       mVector.v = {x: start.x + dx, y: start.y + dy};
       mVector.update();
 
-      params.angle = mVector.getAngle(hVector.n);
+      let angle = mVector.getAngle(hVector.n);
+      if (angle < 0) {
+        angle = 360 + angle
+      }
+
+      params.angle = angle;
       params.speed = Math.min(mVector.l, 300);
+
+      console.log(params.angle)
+
+
     }
   });
 
   document.addEventListener('mouseup', ({pageY}) => {
     if (start) {
-      h = Math.max(0, h + start.pageY - pageY);
       start = false
     }
   });
