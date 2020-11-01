@@ -50,10 +50,10 @@ html(lang='en')
               .toggle
               | Image background:
 
-            div
-              .ui-image.item.selected(style='background-image: url("./images/pat1.png")')
-              .ui-image.item(style='background-image: url("./images/pat2.png")')
-              .ui-image.item(style='background-image: url("./images/pat3.png")')
+            div(id="images")
+              .ui-image.item.selected(data-img='./images/pat1.png')
+              .ui-image.item(data-img='./images/pat2.png')
+              .ui-image.item(data-img='./images/pat3.png')
               .ui-image.add(title="Upload image")
               input.pos-away(type='file' id='selectFile' accept="image/x-png,image/gif,image/jpeg")
               .clr
