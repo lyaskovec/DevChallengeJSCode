@@ -35,7 +35,26 @@ class Poligon {
 Poligon.fromArray = (array) => {
   let instance = new Poligon();
   array.forEach(([x, y]) => instance.push({x, y}));
-  instance.createLines();
   items.push(instance);
+  instance.createLines();
   return instance;
 };
+
+function createStartItems(cX, cY, n = 5, r = 100) {
+  let items = [[cX + r, cY]]
+  //star draw
+  for (let i = 1; i <= n * 2; i++) {
+    let x, y, theta;
+    if (i % 2 === 0) {
+      theta = i * (Math.PI * 2) / (n * 2);
+      x = cX + (r * Math.cos(theta));
+      y = cY + (r * Math.sin(theta));
+    } else {
+      theta = i * (Math.PI * 2) / (n * 2);
+      x = cX + ((r / 2) * Math.cos(theta));
+      y = cY + ((r / 2) * Math.sin(theta));
+    }
+    items.push([x, y]);
+  }
+  return items;
+}

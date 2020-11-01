@@ -14,17 +14,8 @@ class V {
     let vector1 = this.n;
     return (Math.atan2(vector2.y, vector2.x) - Math.atan2(vector1.y, vector1.x))* 180 / Math.PI;
   }
-  draw(color = 'blue'){
-    let {p, v, n, l} = this;
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.arc(p.x - 1, p.y - 1, 2, 0, 2 * Math.PI);
-    ctx.fill()
-    ctx.moveTo(p.x, p.y);
-    ctx.lineTo(p.x + n.x * l, p.y + n.y * l);
-    ctx.stroke();
-    return this;
+  draw(){
+
   }
 
   rotate(ang) {

@@ -19,57 +19,32 @@ let app = new Proxy({
     items.push(line)
   },
   addObstacle(index) {
-    let x = cX = ctx.xx + Math.random() * width;
-    let y = cY = ctx.yy + Math.random() * height
+    let x = ctx.xx + Math.random() * width;
+    let y = ctx.yy + Math.random() * height
     let patterns = [
       () => {
         let w = 100 + Math.random() * 150;
         let h = 100 + Math.random() * 150;
-        let poligon = new Poligon();
-        poligon.push({x, y});
-        poligon.push({x: x + w, y: y});
-        poligon.push({x: x + w, y: y + w});
-        poligon.push({x, y: y + w});
-        return poligon;
+       Poligon.fromArray([
+         [x,y], [x + w, y], [x + w, y + w], [x, y + w]
+       ]);
       },
       () => {
         let w = 100 + Math.random() * 250;
         let h = 100 + Math.random() * 250;
         let kf = 0.8;
         let kt = 1.2;
-        let poligon = new Poligon();
-        poligon.push({x: x * rand(kf, kt), y: y * rand(kf, kt)});
-        poligon.push({x: (x + w / 2) * rand(kf, kt), y: (y + h / 2) * rand(kf, kt)});
-        poligon.push({x: (x - w / 2) * rand(kf, kt), y: (y + h / 2) * rand(kf, kt)});
-        return poligon;
+        Poligon.fromArray([
+          [x * rand(kf, kt), y * rand(kf, kt)],
+          [(x + w / 2) * rand(kf, kt), (y + h / 2) * rand(kf, kt)],
+          [(x - w / 2) * rand(kf, kt), (y + h / 2) * rand(kf, kt)]
+        ]);
       },
       function star() {
-        let n = parseInt(rand(5, 9));
-        let r = rand(50, 200);
-        let poligon = new Poligon();
-        poligon.push({x: cX + r, y: cY});
-
-        //star draw
-        for (let i = 1; i <= n * 2; i++) {
-          let x, y, theta;
-          if (i % 2 === 0) {
-            theta = i * (Math.PI * 2) / (n * 2);
-            x = cX + (r * Math.cos(theta));
-            y = cY + (r * Math.sin(theta));
-          } else {
-            theta = i * (Math.PI * 2) / (n * 2);
-            x = cX + ((r / 2) * Math.cos(theta));
-            y = cY + ((r / 2) * Math.sin(theta));
-          }
-          poligon.push({x, y});
-        }
-        return poligon
+        Poligon.fromArray(createStartItems(x, y, rand(5, 10), rand(150, 200)))
       }
     ];
-
-    let poligon = patterns[index]();
-    items.push(poligon);
-    poligon.createLines();
+    patterns[index]()
   },
   clear() {
     items = items.filter(item => !item.obstacle)
