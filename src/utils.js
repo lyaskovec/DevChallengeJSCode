@@ -28,16 +28,6 @@ function logg(params = {}) {
   Object.keys(params).forEach(key => log[key] = params[key])
 };
 
-const params = {
-  speed: 100,
-  g: -9.8,
-  d: 10,
-  angle: 45,
-  timeSpeed: 3,
-  greedSize: 50,
-};
-
-
 function checkCollision(x1, y1, x2, y2, x3, y3, x4, y4){
   //нахождение координат векторов
   let xv12 = x2 - x1;

@@ -23,10 +23,10 @@ html(lang='en')
           .ui-group__title General
           .ui-group__body
             div Started speed:
-            input(type='number' min='10' max='200' value='50' step='1' name='speed')
+              input(type='number' min='10' max='300' value='50' step='1' name='speed')
 
             div Horizontal angle:
-              input(type='number' min='0' max='180' value='45' step='1' name='angle')
+              input(type='number' min='0' max='360' value='45' step='1' name='angle')
 
             div Speed attenuation:
               input(type='number' min='0.1' max='0.9' value='0.4' step='0.1' name="attenuation")
@@ -34,19 +34,26 @@ html(lang='en')
             div Gravity
               input(type='number' min='0' max='2000' value='980' step='1' name="gravity")
 
+            div Game speed
+              input(type='number' min='1' max='4' value='1' step='1' name="game")
+
             button Start
 
         .ui-group
-          .ui-group__title Obstacles
+          .ui-group__title Information:
+          #logs.ui-group__body
+
+        .ui-group
+          .ui-group__title.hide Obstacles
           .ui-group__body
             button Remove all
 
 
         .ui-group
-          .ui-group__title Background
+          .ui-group__title.hide Background
           .ui-group__body
             label.ui-radio
-              input(type='radio' name='type' value='image' checked)
+              input(type='radio' name='background' value='image' checked)
               .toggle
               | Image background:
 
@@ -59,23 +66,17 @@ html(lang='en')
               .clr
 
             label.ui-radio
-              input(type='radio' name='type' value='greed')
+              input(type='radio' name='background' value='greed')
               .toggle
-              | Grid background:
+              | Grid background
 
-            div Grid size:
+            div Grid size
               input(type='number' min='50' max='200' value='50' step='50' name="grid")
 
             label.ui-radio
-              input(type='radio' name='type' value='none')
+              input(type='radio' name='background' value='none')
               .toggle
-              | Without background:
-
-            button test
-
-        .ui-group
-          .ui-group__title Information:
-          #logs.ui-group__body
+              | Without background
 
 
 

@@ -1,3 +1,27 @@
+let app = {
+  events: {},
+  on(event, fun) {
+    this.events[event] = this.events[event] || [];
+    this.events[event].push(fun);
+  },
+  emit(event, ...args) {
+    this.events[event] && this.events[event].forEach(fun => fun.apply(this, args));
+    return this;
+  },
+  params: {}
+};
+
+
+const params = app.params = new Proxy(app.params, {
+  set(obj, key, value) {
+    if (obj[key] === value) return false;
+    obj[key] = value;
+    app.emit('set.' + key, value);
+    app.emit('set', key, value);
+    return true;
+  }
+});
+
 
 // Working with images
 {
@@ -59,33 +83,33 @@
 
 // Add sliders instead of number inputs
 {
-  let params = {};
+  let inputs = {};
   let current = false;
-  window.par = params;
+  window.par = inputs;
   let sliderNode = document.querySelector('.ui-slider');
   Array.from(document.querySelectorAll('input[type=number]')).forEach(input => {
     let node = sliderNode.cloneNode(true);
     input.parentNode.insertBefore(node, input);
     input.classList.add('none');
     let {name, min = 0, max, step = 1, value} = input;
-    let param = params[name] = {min, max, step, value};
+    let param = inputs[name] = {min, max, step, value};
     Object.keys(param).forEach(key => param[key] = +param[key]);
     param.node = node;
     Array.from(node.querySelectorAll('[ref]')).forEach(item => param[item.getAttribute('ref')] = item);
     param.body.sliderId = name;
-    param.posStep = 1 / ((max - min) / step + 1);
+    param.posStep = 1 / ((max - min) / step );
     upd(name)
   });
 
   function upd(name) {
-    let param = params[name];
+    let param = inputs[name];
     let {min, max, step, value} = param;
     updPos(name, (value - min) / (max - min));
     param.title.innerHTML = param.value
   }
 
   function updPos(name, position){
-    let param = params[name];
+    let param = inputs[name];
     let {point, body, title, min, max, step, posStep} = param;
     position = Math.min(1, Math.max(0, position));
     position = Math.round(position / posStep) * posStep
@@ -94,6 +118,7 @@
     value = value * 10000;
     value = value - value % 1;
     value = value / 10000;
+    inputs[name].value = value;
     title.innerHTML = value;
     point.style.left = `${position * 100}%`
   }
@@ -102,11 +127,27 @@
     let {target} = evt;
     let {classList} = target;
     if (!classList.contains('ui-slider__body')) return;
+    let name = target.sliderId;
     current = target;
     let pos = getMousePosOnElement(evt);
-    updPos(target.sliderId, pos.left / target.clientWidth);
+    updPos(name, pos.left / target.clientWidth);
+    params[name] = inputs[name].value;
     startDrag(evt, ({dx}) => {
       updPos(target.sliderId, (pos.left + dx) / target.clientWidth)
+      params[name] = inputs[name].value;
     })
   });
+
+  app.on('set', (name, value) => {
+    if (inputs[name]) {
+      inputs[name].value = value;
+      upd(name)
+    }
+  })
 }
+
+
+document.addEventListener('input', (evt) => {
+  let {target} = evt;
+  params[target.name] = target.value
+});

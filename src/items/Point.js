@@ -30,14 +30,12 @@ class Point extends V {
 
     if (this.collisions(time)) return;
 
-    logg({'Time delay': Date.now() - start});
-
     this.p.x = this.next.x;
     this.p.y = this.next.y;
     let {x, y} = this.p;
     logg({x: this.p.x, y: this.p.y, v: this.l});
     ctx.fillStyle = this.isCollision ? 'red' : 'blue';
-    ctx.strokeStyle = 'blue'
+    ctx.strokeStyle = 'blue';
     ctx.beginPath();
     ctx.arc(this.p.x, this.p.y, 1, 0, 2 * Math.PI);
     ctx.stroke();

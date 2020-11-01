@@ -13,18 +13,11 @@ function Line(x, y, x2, y2) {
 }
 
 Line.prototype = {
-  getLength() {
-
-  },
   draw(){
     ctx.beginPath();
     ctx.strokeStyle = this.isCollision ? 'red' : 'black';
     ctx.moveTo(this.p1.x, this.p1.y);
     ctx.lineTo(this.p2.x, this.p2.y);
     ctx.stroke();
-  },
-  checkLine(){},
-  upd(){
-    this.draw()
   }
 };

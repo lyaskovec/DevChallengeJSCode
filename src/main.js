@@ -33,10 +33,10 @@ for(let i = 0; i < 3; i++) {
   // items.push(new Line(Math.random() * 100, Math.random() * 100, Math.random() * 500, Math.random() * 500))
 }
 
-items.push(new Line(500, 50, 0, 50));
-items.push(new Line(0, 500, 50, 0)); // left
-items.push(new Line(500, 500, 0, 450)); // bottom
-items.push(new Line(500, 0, 500, 500)); // right
+// items.push(new Line(500, 50, 0, 50));
+// items.push(new Line(0, 500, 50, 0)); // left
+// items.push(new Line(500, 500, 0, 450)); // bottom
+// items.push(new Line(500, 0, 500, 500)); // right
 items.push(new Grid())
 // Підлога
 items.push(new Line(-100000, 470, 500000, 480));
@@ -73,7 +73,7 @@ function draw() {
   ctx.xx = xx;
   ctx.yy = yy;
   canvas.style.backgroundPosition = `${parseInt(xx) % zoom.gridW}px ${parseInt(yy) % zoom.gridH}px `
-  logg({xx, yy, 'Frame time': delta, 'Fps': parseInt(1 / delta * 1000)})
+  logg({xx, yy})
   ctx.translate(xx, yy);
   items.forEach(item => item.draw && item.draw());
   ctx.restore();
@@ -134,8 +134,9 @@ document.body.addEventListener('keydown', ({keyCode}) => {
       let dx = pageX - start.pageX;
       mVector.v = {x: start.x + dx, y: start.y + dy};
       mVector.update();
-      line.style.height = mVector.l + 'px';
-      point.style.transform = `rotate(${180 - mVector.getAngle(hVector.n) - 90}deg)`;
+
+      params.angle = mVector.getAngle(hVector.n);
+      params.speed = Math.min(mVector.l, 300);
     }
   });
 
@@ -232,4 +233,12 @@ canvas.addEventListener('mousemove', evt => {
     ctx.pos = false
   }
 });
+
+{
+  let drop = document.querySelector('.drop');
+  let line = drop.parentElement;
+  let point = line.parentElement;
+  app.on('set.speed', (length) => line.style.height = length + 'px');
+  app.on('set.angle', (angle) => point.style.transform = `rotate(${180 - angle - 90}deg)`);
+}
 
