@@ -1,5 +1,6 @@
 class Poligon {
   constructor() {
+    this.obstacle = true
     this.items = [];
   }
 
@@ -30,3 +31,11 @@ class Poligon {
     return this.items.length - 1
   }
 }
+
+Poligon.fromArray = (array) => {
+  let instance = new Poligon();
+  array.forEach(([x, y]) => instance.push({x, y}));
+  instance.createLines();
+  items.push(instance);
+  return instance;
+};

@@ -42,7 +42,7 @@ class Point extends V {
     }
 
     let {x, y} = this.p;
-    logg({
+    app.paused || logg({
       x: this.p.x,
       y: this.p.y,
       'Current speed': this.l,

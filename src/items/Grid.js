@@ -11,10 +11,9 @@ class Grid {
     ctx.rect(0, height - 1, width, 1);
     ctx.fill();
 
-    let step = 250;
+    let step = 150;
     let startY = ctx.yy % step;
     let startX = ctx.xx % step;
-
 
     for (let i = 0; i < 20; i++) {
       let offset = i * step;

@@ -68,7 +68,6 @@ let app = new Proxy({
     ];
 
     let poligon = patterns[index]();
-    poligon.obstacle = true;
     items.push(poligon);
     poligon.createLines();
   },
@@ -185,7 +184,7 @@ let app = new Proxy({
   });
 
   function setBg() {
-    let {bg} = params;
+    let {bg} = app;
     canvas.style.backgroundImage = `url(${imgMap[bg].url})`
   }
 

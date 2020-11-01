@@ -9,7 +9,7 @@ function len(a, b) {
 
 let point = new Point(100, height - padding, 250, -250);
 let items = [point];
-let stopped = true;
+items.push(Poligon.fromArray([[450, 400], [500, 250], [500, 150], [580, 200],  [600, 450], [480, 450]]));
 
 items.push(new Grid());
 
@@ -18,6 +18,7 @@ let floor = new Line(-10000000, height - padding, 5000000, height - padding);
 items.push(floor);
 
 let time = Date.now();
+
 
 function draw() {
   let current = Date.now();
