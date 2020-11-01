@@ -4,15 +4,17 @@
   "description": "",
   "scripts": {
     "watch": "gulp watch",
-    "build": "gulp build"
+    "prod": "cross-env PRODUCT=1 gulp build"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "cross-env": "^7.0.2",
     "del": "^6.0.0",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-connect": "^5.7.0",
+    "gulp-if": "^3.0.0",
     "gulp-live-server": "0.0.31",
     "gulp-print": "^5.0.2",
     "gulp-pug": "^4.0.1",

@@ -1,8 +1,9 @@
 const destinationFolder = 'build';
-const path = require('path');
-const { src, dest, watch,  series, parallel  } = require('gulp');
+const { src, dest, watch,  series, parallel, start} = require('gulp');
+let IS_PRODUCT = process.env.PRODUCT;
 
 let gulp = require('gulp'),
+  gulpif = require('gulp-if'),
   concat = require('gulp-concat'),
   multipipe = require('multipipe'),
   del = require('del'),
@@ -13,27 +14,23 @@ let gulp = require('gulp'),
   uglify = require('gulp-uglify-es').default,
   connect = require('gulp-connect');
 
-
 exports.templates = function templates () {
   return multipipe(
     src(['src/**/*.pug']),
-    //sourcemaps.init(),
     pug({pretty: true}),
-    dest(destinationFolder)
-    //, connect.reload()
+    dest(destinationFolder),
+    gulpif(!IS_PRODUCT, connect.reload())
   );
 };
-
 
 exports.styles = function styles() {
   return multipipe(
     src(['src/**/*.styl']),
-    sourcemaps.init(),
+    gulpif(!IS_PRODUCT, sourcemaps.init()),
     stylus(),
     concat('app.css'),
-    sourcemaps.write(),
-    dest(`${destinationFolder}`),
-    // connect.reload()
+    gulpif(!IS_PRODUCT, sourcemaps.write()),
+    dest(`${destinationFolder}`)
   );
 };
 
@@ -46,12 +43,11 @@ exports.js = function js() {
       'src/utils.js',
       'src/**/*.js'
     ]),
-    sourcemaps.init(),
+    gulpif(!IS_PRODUCT, sourcemaps.init()),
     concat('app.js'),
-    // uglify(),
-    // sourcemaps.write(),
+    gulpif(IS_PRODUCT, uglify()),
+    gulpif(!IS_PRODUCT, sourcemaps.write()),
     dest(`${destinationFolder}`)
-    // ,connect.reload()
   );
 };
 
@@ -63,7 +59,6 @@ exports.assets = function assets () {
 };
 
 exports.default = parallel(exports.js, exports.templates, exports.assets, exports.styles);
-
 
 exports.watch = function () {
   connect.server({
