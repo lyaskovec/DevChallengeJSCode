@@ -5,13 +5,18 @@ class Point extends V {
     this.paused = true;
     this.next = {x: 0, y: 0};
     this.way = 0;
+    this.xWay = 0
+    this.yWay = 0
   }
   draw(){
     let {p, n} = this;
+    let {paused} = app;
     ctx.beginPath();
     ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
-    ctx.moveTo(p.x, p.y);
-    ctx.lineTo(p.x + 25 * n.x, p.y + 25 * n.y);
+    if (!paused) {
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + 25 * n.x, p.y + 25 * n.y);
+    }
     ctx.stroke();
     ctx.fill();
   }
@@ -28,13 +33,23 @@ class Point extends V {
 
     this.next.x = this.p.x + this.v.x * time;
     this.next.y = this.p.y + this.v.y * time;
+    this.way += len(this.p, this.next)
+    this.xWay += len(this.p, this.next) * Math.abs(this.n.x);
+    this.yWay += len(this.p, this.next) * Math.abs(this.n.y);
 
-    if (this.collisions(time)) return;
-
-    this.update({p: {x: this.next.x, y: this.next.y}});
+    if (!this.collisions(time)) {
+      this.update({p: {x: this.next.x, y: this.next.y}});
+    }
 
     let {x, y} = this.p;
-    logg({x: this.p.x, y: this.p.y, v: this.l});
+    logg({
+      x: this.p.x,
+      y: this.p.y,
+      'Current speed': this.l,
+      'Total way': this.way,
+      'Total way on X': this.xWay,
+      'Total way on Y': this.yWay
+    });
     this.draw()
   }
 
@@ -57,38 +72,36 @@ class Point extends V {
       let h = V.line(p, this.p);
       let perpend = V.line(p, l.p2);
 
-      perpend.rotate(90)
+      perpend.rotate(90);
       perpend.draw();
 
       h.draw('red');
 
       let ang = h.getAngle(perpend.n);
       if (isNaN(ang)) {
-        ang = 90
+        ang = 90;
+
       }
 
-      this.draw('black');
-      let nextLength = len(p, this.next);
-      if (nextLength < 0.0001) {
-        this.paused = true;
-        app.emit('finished');
-        nextLength = 0.0001;
-        return;
+      logg({'Current speed': this.l})
+
+      if (this.l < 1) {
+        point.update({v: {x: 250, y: -250}})
+        app.stop('finish');
+        return true;
       }
 
-      let newV = h.clone().rotate(2 * ang + 0.01).len(nextLength).draw('red');
-      let newVV = newV.clone().len(this.l).move(0, 5).draw('blue');
+      let newV = h.clone().rotate(2 * ang + 0.1).len(len(p, this.next));
+      let newVV = newV.clone().len(this.l);
 
-      this.next.x = newV.p.x + newV.v.x +  newV.n.x / 10000;
-      this.next.y = newV.p.y + newV.v.y + newV.n.y / 10000;
+      this.next.x = newV.p.x + newV.v.x;
+      this.next.y = newV.p.y + newV.v.y;
 
-      this.v.x = newVV.v.x;
-      this.v.y = newVV.v.y;
-      this.update();
+      this.update({v: newVV.v});
       this.len(this.l * (1 - app.attenuation));
       this.collisions();
+      return true
     }
-    this.isCollision = !!collisions.length;
     return collisions.length
   }
 }

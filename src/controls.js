@@ -19,8 +19,8 @@ let app = new Proxy({
     items.push(line)
   },
   addObstacle(index) {
-    let x = cX = Math.random() * width;
-    let y = cY = Math.random() * height
+    let x = cX = ctx.xx + Math.random() * width;
+    let y = cY = ctx.yy + Math.random() * height
     let patterns = [
       () => {
         let w = 100 + Math.random() * 150;
@@ -70,22 +70,20 @@ let app = new Proxy({
     let poligon = patterns[index]();
     poligon.obstacle = true;
     items.push(poligon);
-    let list = Array.from(poligon.items);
-    let first = list[0];
-    list.push(first);
-    list.forEach(item => {
-      let line = new Line(first.x, first.y, item.x, item.y);
-      line.obstacle = true;
-      items.push(line);
-      console.log('Line', line)
-      first = item
-    })
+    poligon.createLines();
   },
   clear() {
     items = items.filter(item => !item.obstacle)
   },
   reset() {
-
+    logg({x: 0, y: 0, 'Current speed': 0, 'Total way': 0, 'Total way on X': 0, 'Total way on Y': 0})
+    this.angle = 45;
+    this.speed = 50;
+    point.update({p: {x: 100, y: height - padding}, v: {x: 250, y: -250}});
+    this.paused = true;
+    ctx.xx = 0;
+    ctx.yy = 0;
+    this.emit('reset')
   },
   init() {
     this.el = ge('app');
@@ -104,11 +102,19 @@ let app = new Proxy({
       })
     )
   },
+  stop(type){
+    this.resetPoint();
+    this.paused = true;
+  },
   pause() {
     this.paused = !this.paused
   },
   add(item) {
     return item;
+  },
+  resetPoint(){
+    app.angle = 45
+    app.speed = 50
   }
 }, {
   set(obj, key, value) {

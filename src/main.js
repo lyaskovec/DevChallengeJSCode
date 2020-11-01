@@ -1,15 +1,15 @@
 let canvas = ge('canvas');
-let ctx = canvas.getContext('2d');
+let ctx = Object.assign(canvas.getContext('2d'), {xx: 0, yy: 0});
 let width, height = 500;
 let padding = 50;
 
 function len(a, b) {
-  return Math.sqrt(Math.pow(a.x - b.x, 2), Math.pow(a.y - b.y, 2))
+  return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
 }
 
 let point = new Point(100, height - padding, 250, -250);
 let items = [point];
-let stopped = true
+let stopped = true;
 
 items.push(new Grid());
 
@@ -48,7 +48,6 @@ function draw() {
 
   Object.assign(ge('ll').style, {left: -ctx.xx + 'px', top: -ctx.yy + 'px'})
   canvas.style.backgroundPosition = `${-xx}px ${-yy}px `;
-  logg({xx, yy, x, y});
   ctx.translate(-ctx.xx, -ctx.yy);
   items.forEach(item => item.draw && item.draw());
   ctx.restore();
@@ -72,15 +71,31 @@ document.body.addEventListener('keydown', (evt) => {
   let line = dropElement.querySelector('.end');
   let start = false;
 
+  function pintoToDrop() {
+    let {speed} = app;
+    let {x, y} = point.p;
+    let angle = point.getAngle(floor.n);
+    if (angle < 0) {
+      angle = 360 + angle
+    }
+    point.len(speed);
+    Object.assign(dropElement.style, {left: x + 'px', top: y + 'px', transform: `translate(-50%, -50%) rotate(${180 - angle - 90}deg)`});
+    line.style.height = speed + 'px'
+  }
+
   app.on('set.speed', (length) => line.style.height = (length) + 'px');
   app.on('set.angle', (angle) => dropElement.style.transform = `translate(-50%, -50%) rotate(${180 - angle - 90}deg)`);
   app.on('set.paused', value => {
     value ? show(dropElement) : hide(dropElement);
     if (value) {
-      let {x, y} = point.p;
-      Object.assign(dropElement.style, {left: x + 'px', top: y + 'px'});
+      this.finished = false;
+      pintoToDrop();
     }
+    ge('start').innerHTML = value ? 'Start' : 'Paused';
+    items.forEach(item => item.isCollision = false)
   });
+
+  app.on('reset', ()=> pintoToDrop());
 
   dropElement.addEventListener('mousedown', evt => {
     let {target} = evt;
@@ -96,7 +111,6 @@ document.body.addEventListener('keydown', (evt) => {
       startDrag(evt, ({dx, dy}) => {
         Object.assign(dropElement.style, {left: x + dx + 'px', top: y + dy + 'px'});
         point.update({p: {x: x + dx, y: Math.min(y + dy, height - padding - 0.1)}});
-        logg({'sssssss': Math.max(y + dy, height - padding - 0.1)});
         draw()
       })
     }
@@ -111,11 +125,13 @@ document.body.addEventListener('keydown', (evt) => {
           angle = 360 + angle
         }
         app.angle = angle;
-        app.speed = Math.min(point.l, 1000);
+        app.speed = Math.min(point.l, 300);
         draw()
       })
     }
   });
+
+  pintoToDrop();
 }
 
 document.addEventListener('click', (evt) => {

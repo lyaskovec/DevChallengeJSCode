@@ -1,10 +1,11 @@
 let logs = {};
 let log = new Proxy({}, {
   set(obj, key, value) {
+    value = parseInt(value);
     if (obj[key] === value || key === 'extend') return false;
     obj[key] = value;
     if (!logs[key]) {
-      let el = crEl('div', {innerHTML: `<b>${key}: <span></span></b>`});
+      let el = crEl('div', {className: 'log', innerHTML: `<b>${key}: </b><span></span>`});
       logs[key] = el.querySelector('span');
       ge('logs').append(el)
     }

@@ -40,8 +40,7 @@ html(lang='en')
               input(type='number' min='1' max='10' value='5' step='1' name="game")
 
             .align-center
-              button(data-action='start') Start
-              button Pause
+              button(onclick='app.pause()' id='start') Start
               button(onclick='app.reset()') Reset
 
         .ui-group
