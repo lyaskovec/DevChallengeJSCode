@@ -65,6 +65,7 @@ exports.default = parallel(exports.js, exports.templates, exports.assets, export
 exports.watch = function () {
   connect.server({
     root: destinationFolder,
+    port: 8888
     // livereload: true
   });
   exports.default();

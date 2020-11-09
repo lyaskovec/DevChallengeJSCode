@@ -1,0 +1,31 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title
+    link(rel='stylesheet' href='app.css')
+  body
+
+    .ui-slider
+      .ui-slider__range
+        .ui-slider__body(ref='body')
+          .ui-slider__point(ref='point')
+      .ui-slider__value(ref='title') 0.5
+    #app(class='b-wrap' style="flex-direction: column;")
+      .none
+        canvas#canvas
+        #images
+        #ll
+        #point(style='transform: rotate(45deg)')
+          .drag(role='move')
+          .end
+            .drop(role='set')
+        input(id="selectFile")
+      div
+        input(type='number' min='0' max='100' value='1' step='1' name="attenuation")
+
+      #logs
+
+
+    script(src='app.js?sa0fads')

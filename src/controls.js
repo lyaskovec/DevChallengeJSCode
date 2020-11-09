@@ -222,7 +222,7 @@ let app = new Proxy({
     let param = inputs[name];
     let {point, body, title, min, max, step, posStep} = param;
     position = Math.min(1, Math.max(0, position));
-    position = Math.round(position / posStep) * posStep
+    position = Math.round(position / posStep) * posStep;
     let value = min + position * (max - min);
     value = Math.round(value / step) * step;
     value = value * 10000;
@@ -231,21 +231,27 @@ let app = new Proxy({
     inputs[name].value = value;
     title.innerHTML = value;
     point.style.left = `${position * 100}%`
-  }
+  };
 
-  document.addEventListener('mousedown', (evt) => {
-    let {target} = evt;
-    let {classList} = target;
-    if (!classList.contains('ui-slider__body')) return;
-    let name = target.sliderId;
-    current = target;
-    let pos = getMousePosOnElement(evt);
-    updPos(name, pos.left / target.clientWidth);
-    app[name] = inputs[name].value;
-    startDrag(evt, ({dx}) => {
-      updPos(target.sliderId, (pos.left + dx) / target.clientWidth)
+  ['mousedown', 'touchstart'].forEach(eventName => {
+    document.addEventListener(eventName, (evt) => {
+      let {target} = evt;
+      if (evt.targetTouches) {
+        target = evt.changedTouches[0].target
+      }
+      let {classList} = target;
+      if (!classList.contains('ui-slider__body')) return;
+      let name = target.sliderId;
+      current = target;
+      let pos = getMousePosOnElement(evt);
+      updPos(name, pos.left / target.clientWidth);
       app[name] = inputs[name].value;
-    })
+      startDrag(evt, ({dx}) => {
+        console.log({dx, pos})
+        updPos(target.sliderId, (pos.left + dx) / target.clientWidth)
+        app[name] = inputs[name].value;
+      })
+    }, {passive: true});
   });
 }
 

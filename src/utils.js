@@ -93,6 +93,7 @@ function radians_to_degrees(radians) {
 }
 
 function getMousePosOnElement(e) {
+  if (e.targetTouches) e = e.changedTouches[0];
   let rect = e.target.getBoundingClientRect();
   return {left: e.clientX - rect.left, top: e.clientY - rect.top}
 }

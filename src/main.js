@@ -155,23 +155,32 @@ updateSize();
 
   function result({pageX, pageY, type}) {
     fun && fun({dy: pageY - start.pageY, dx: pageX - start.pageX, type})
-  }
+  };
 
-  document.addEventListener('mousemove', ((evt) => {
-    if (start) {
-      result(evt)
-    }
-  }).throttle(15));
-
-  document.addEventListener('mouseup', (evt) => {
-    if (start) {
-      result(evt);
-      start = false;
-    }
+  ['mousemove', 'touchmove'].forEach(eventName => {
+    document.addEventListener(eventName, ((evt) => {
+      console.log('======> ', eventName);
+      let params = evt.type === 'touchmove' ? Object.assign(evt.changedTouches[0], {type: evt.type}) : evt;
+      if (start) {
+        result(params)
+      }
+    }).throttle(1))
   });
 
+
+  ['mouseup', 'touchend'].forEach(eventName =>
+    document.addEventListener(eventName, (evt) => {
+      let params = evt.type === 'touchend' ? Object.assign(evt.changedTouches[0], {type: evt.type}) : evt;
+      if (start) {
+        result(params);
+        start = false;
+      }
+    })
+  );
+
   function startDrag(evt, callback) {
-    let {pageX, pageY} = evt;
+    let params = evt.targetTouches ? evt.targetTouches[0] : evt;
+    let {pageX, pageY} = params;
     start = {pageX, pageY};
     fun = callback;
     evt.preventDefault()
